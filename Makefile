@@ -9,7 +9,7 @@ run: build
 	mpirun -np 2 $(EXECUTABLE) $(args)
 
 build: liblab_one.so liblab_two.so liblab_three.so
-	$(CC) -lm -std=c99 -Wl,-rpath,$(PWD) -L. -l:$< -l:liblab_two.so -o $(EXECUTABLE) main.c
+	$(CC) -lm -std=c99 -Wl,-rpath,$(PWD) -L. -l:$< -l:liblab_two.so -l:liblab_three.so -o $(EXECUTABLE) main.c
 
 liblab_one.so: lab_one.o
 	$(CC) -shared -export-dynamic -o $@ $<
