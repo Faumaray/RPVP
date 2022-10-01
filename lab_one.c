@@ -1,6 +1,4 @@
 #include "lab_one.h"
-#include "mpi.h"
-#include <stdlib.h>
 void alltoall(size_t size) {
   // Get the number of processes
   int world_size;
