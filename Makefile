@@ -1,33 +1,37 @@
-CC=mpicc
-CFLAGS=-std=c99 -rdynamic -g -fPIC
+CC=mpic++
+CFLAGS=-rdynamic -g -fPIC -O2 -s -DNDEBUG
 EXECUTABLE=mpi
-args=-r
-
-all: build run
-
-run: build
-	mpirun -np 2 $(EXECUTABLE) $(args)
-
-build: liblab_one.so liblab_two.so liblab_three.so
-	$(CC) -lm -std=c99 -Wl,-rpath,$(PWD) -L. -l:$< -l:liblab_two.so -l:liblab_three.so -o $(EXECUTABLE) main.c
+args=1 r 1024
+build: prepare liblab_one.so liblab_two.so liblab_three.so
+	$(CC) -O2 -s -DNDEBUG -lm -Wl,-rpath,$(PWD)/target -L./target -l:liblab_one.so -l:liblab_two.so -l:liblab_three.so -o target/$(EXECUTABLE) main.cpp
 
 liblab_one.so: lab_one.o
-	$(CC) -shared -export-dynamic -o $@ $<
+	$(CC) -shared -export-dynamic -o target/$@ build/$<
 
 liblab_two.so: lab_two.o
-	$(CC) -shared -export-dynamic -o $@ $<
+	$(CC) -shared -export-dynamic -o target/$@ build/$<
 
 liblab_three.so: lab_three.o
-	$(CC) -shared -export-dynamic -o $@ $<
+	$(CC) -shared -export-dynamic -o target/$@ build/$<
 
 lab_one.o:
-	$(CC) $(CFLAGS) -c lab_one.c
+	$(CC) $(CFLAGS) -c lab_one.cpp -o build/$@
 
 lab_two.o:
-	$(CC) $(CFLAGS) -c lab_two.c
+	$(CC) $(CFLAGS) -c lab_two.cpp -o build/$@
 
 lab_three.o:
-	$(CC) $(CFLAGS) -c lab_three.c
+	$(CC) $(CFLAGS) -c lab_three.cpp -o build/$@
+
+run:
+	mpirun -np 2 target/$(EXECUTABLE) $(args)
+
+
+prepare:
+	mkdir -p target
+	mkdir -p build
+
 
 clean:
-	rm -rf *.o *.so mpi
+	rm -rf target
+	rm -rf build
