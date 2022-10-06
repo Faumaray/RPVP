@@ -1,12 +1,11 @@
 #include "lab_two.hpp"
 
-const int n = 10000000;
 const double e = 0.000001;
 double drand(double low, double high) {
     return ((double)rand() * (high - low)) / (double)RAND_MAX + low;
 }
 void monte_carlo(double (*func)(double, double), double lower_x, double lower_y,
-                 double upper_x, double upper_y) {
+                 double upper_x, double upper_y, int n) {
     int world_size = MPI::COMM_WORLD.Get_size();
     int world_rank = MPI::COMM_WORLD.Get_rank();
     double starttime, endtime;
@@ -18,6 +17,83 @@ void monte_carlo(double (*func)(double, double), double lower_x, double lower_y,
     for (int i = world_rank; i < n; i += world_size) {
         double x = drand(lower_x, upper_x);
         double y = drand(lower_y, upper_y);
+        in++;
+        double tmp = func(x, y);
+        if (tmp == -1) {
+            continue;
+        }
+        s += tmp;
+    }
+    int gin = 0;
+    MPI::COMM_WORLD.Reduce(&in, &gin, 1, MPI::INT, MPI::SUM, 0);
+    double gsum = 0.0;
+    MPI::COMM_WORLD.Reduce(&s, &gsum, 1, MPI::DOUBLE, MPI::SUM, 0);
+
+    if (world_rank == 0) {
+        double v = upper_x * gin / n;
+        double res = v * gsum / gin;
+        printf("Result: %.12f, n %d\n", res, n);
+        endtime = MPI::Wtime();
+        printf("Time estimated: %f", endtime - starttime);
+    }
+}
+
+void monte_carlo(double (*func)(double, double), double lower_x, double lower_y,
+                 double upper_x, double upper_y, double difference, bool append,
+                 BoundDifference bound, int n) {
+    int world_size = MPI::COMM_WORLD.Get_size();
+    int world_rank = MPI::COMM_WORLD.Get_rank();
+    double starttime, endtime;
+    starttime = MPI::Wtime();
+
+    srand(world_rank);
+    int in = 0;
+    double s = 0;
+    for (int i = world_rank; i < n; i += world_size) {
+        double x;
+        double y;
+        switch (bound) {
+        case BoundDifference::lower_x:
+            y = drand(lower_y, upper_y);
+            lower_x = append ? y + difference : difference - y;
+            x = drand(lower_x, upper_x);
+            break;
+        case BoundDifference::lower_y:
+            x = drand(lower_y, upper_y);
+            lower_y = append ? x + difference : difference - x;
+            y = drand(lower_x, upper_x);
+            break;
+        case BoundDifference::upper_x:
+            y = drand(lower_y, upper_y);
+            upper_x = append ? y + difference : difference - y;
+            x = drand(lower_x, upper_x);
+            break;
+        case BoundDifference::upper_y:
+            x = drand(lower_y, upper_y);
+            upper_y = append ? x + difference : difference - x;
+            y = drand(lower_x, upper_x);
+            break;
+        case BoundDifference::lower_x_against:
+            y = drand(lower_y, upper_y);
+            lower_x = append ? y + difference : y - difference;
+            x = drand(lower_x, upper_x);
+            break;
+        case BoundDifference::lower_y_against:
+            x = drand(lower_y, upper_y);
+            lower_y = append ? x + difference : x - difference;
+            y = drand(lower_x, upper_x);
+            break;
+        case BoundDifference::upper_x_against:
+            y = drand(lower_y, upper_y);
+            upper_x = append ? y + difference : y - difference;
+            x = drand(lower_x, upper_x);
+            break;
+        case BoundDifference::upper_y_against:
+            x = drand(lower_y, upper_y);
+            upper_y = append ? x + difference : x - difference;
+            y = drand(lower_x, upper_x);
+            break;
+        };
         in++;
         double tmp = func(x, y);
         if (tmp == -1) {
