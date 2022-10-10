@@ -25,7 +25,7 @@ void alltoall(size_t size) {
     for (int i = 0; i < world_size; i++) {
 
         recv_req[i] =
-            MPI::COMM_WORLD.Isend(rbuf + (size * i), size, MPI::CHAR, i, 0);
+            MPI::COMM_WORLD.Irecv(rbuf + (size * i), size, MPI::CHAR, i, 0);
     }
     MPI::Request::Waitall(world_size, recv_req, status);
 
