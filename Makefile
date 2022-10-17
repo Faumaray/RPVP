@@ -2,17 +2,18 @@ CC=mpic++
 CFLAGS=-std=c++0x -rdynamic -g -fPIC -O2 -s -DNDEBUG -Iinclude
 EXECUTABLE=mpi
 args=1 r 1024
+proc=2
 
 help_ru: ## Prints help for targets with comments
 	$(info Комманда для сборки: make build)
-	$(info Комманда для запуска: make run args={об этом далее})
+	$(info Комманда для запуска: make run proc={кол-во процессов} args={об этом далее})
 	$(info Args=(номер лабораторной) (для первой лабы: первая буква метода [r\b\g\a]) (размер буфера))
 	$(info Args=(номер лабораторной) (для второй лабы: первая буква метода [m\c]) (последняя цифра зачётки) (размер буфера))
 	$(info Все аргументы писать без скобок)
 
 help_en: ## Prints help for targets with comments
 	$(info For build run: make build)
-	$(info For run the program run: make run args={your args})
+	$(info For run the program run: make run proc={num of process} args={your args})
 	$(info Args=(number of lab) (for first lab: first letter of the method [r\b\g\a]) (size of the buffer))
 	$(info Args=(number of lab) (for second lab: first name of the method [m\c]) (last number of the record book) (size of the buffer))
 
@@ -38,7 +39,7 @@ lab_three.o:
 	$(CC) $(CFLAGS) -c src/lab_three.cpp -o build/$@
 
 run:
-	mpirun -np 2 target/$(EXECUTABLE) $(args)
+	mpirun -np $(proc) target/$(EXECUTABLE) $(args)
 
 
 prepare:
