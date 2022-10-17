@@ -3,7 +3,14 @@ CFLAGS=-std=c++0x -rdynamic -g -fPIC -O2 -s -DNDEBUG -Iinclude
 EXECUTABLE=mpi
 args=1 r 1024
 
-help: ## Prints help for targets with comments
+help_ru: ## Prints help for targets with comments
+	$(info Комманда для сборки: make build)
+	$(info Комманда для запуска: make run args={об этом далее})
+	$(info Args=(номер лабораторной) (для первой лабы: первая буква метода [r\b\g\a]) (размер буфера))
+	$(info Args=(номер лабораторной) (для второй лабы: первая буква метода [m\c]) (последняя цифра зачётки) (размер буфера))
+	$(info Все аргументы писать без скобок)
+
+help_en: ## Prints help for targets with comments
 	$(info For build run: make build)
 	$(info For run the program run: make run args={your args})
 	$(info Args=(number of lab) (for first lab: first letter of the method [r\b\g\a]) (size of the buffer))
