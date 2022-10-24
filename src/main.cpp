@@ -61,7 +61,6 @@ int main(int argc, char **argv) {
       break;
     case 'c':
       int n = strtol(argv[4], rng, 10);
-      std::cout << n << std::endl;
       switch ((variant % 3) + 1) {
       case 1:
         monte_carlo(one_on_two, 0.0l, 2.0l, 1.0l, 5.0l, n);
