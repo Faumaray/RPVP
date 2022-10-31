@@ -26,14 +26,8 @@ void SGEMV(int dim, double *matrix_data, double *vector_data, double *result) {
     printf("Matrix  :\n");
     for (int i = 0; i < dim; i++) {
       for (int j = 0; j < dim; j++)
-        printf("%.5f ", matrix_data[i][j]);
-      printf("\n");
+        std::cout << matrix_data[i + j] << std::endl;
     }
-    printf("Vector :\n");
-    for (int i = 0; i < dim; i++)
-      printf("%.5f ", vector_data[i]);
-    printf("\n\n");
-
     printf("Vector :\n");
     for (int i = 0; i < dim; i++)
       printf("%.5f ", vector_data[i]);

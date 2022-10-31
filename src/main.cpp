@@ -77,18 +77,19 @@ int main(int argc, char **argv) {
       break;
     }
   case 3:
+    std::srand(time(0));
     int size = strtoul(argv[2], rng, 10);
     double **matrix = new double *[size];
     for (int i = 0; i < size; ++i) {
       double *row = new double[size];
-      for (int j = 0; j < size; j++) {
-        row[j] = rand();
+      for (int j = 0; j <= size; ++j) {
+        row[j] = rand() % 100;
       }
       matrix[i] = row;
     }
     double *multi = new double[size];
     for (int i = 0; i < size; ++i) {
-      multi[i] = rand();
+      multi[i] = rand() % 100;
     }
     double *result = new double[size];
     SGEMV(size, *matrix, multi, result);
