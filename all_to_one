@@ -1,0 +1,316 @@
+mpirun -np 32 target/mpi 1 g 1024
+Process 0 received in element 1024 size of data 0 from 1 
+Time 0.000852332 of process 0
+Process 0 received in element 2048 size of data 0 from 2 
+Time 0.000988224 of process 0
+Process 0 received in element 3072 size of data 0 from 3 
+Time 0.0010003 of process 0
+Process 0 received in element 4096 size of data 0 from 4 
+Time 0.00100792 of process 0
+Process 0 received in element 5120 size of data 0 from 5 
+Time 0.00106196 of process 0
+Process 0 received in element 6144 size of data 0 from 6 
+Time 0.00107358 of process 0
+Process 0 received in element 7168 size of data 0 from 7 
+Time 0.00108135 of process 0
+Process 0 received in element 8192 size of data 0 from 8 
+Time 0.00108843 of process 0
+Process 0 received in element 9216 size of data 0 from 9 
+Time 0.00109609 of process 0
+Process 0 received in element 10240 size of data 0 from 10 
+Time 0.00110497 of process 0
+Process 0 received in element 11264 size of data 0 from 11 
+Time 0.00111316 of process 0
+Process 0 received in element 12288 size of data 0 from 12 
+Time 0.00112219 of process 0
+Process 0 received in element 13312 size of data 0 from 13 
+Time 0.00113017 of process 0
+Process 0 received in element 14336 size of data 0 from 14 
+Time 0.00113794 of process 0
+Process 0 received in element 15360 size of data 0 from 15 
+Time 0.00114557 of process 0
+Process 0 received in element 16384 size of data 0 from 16 
+Time 0.00115366 of process 0
+Process 0 received in element 17408 size of data 0 from 17 
+Time 0.00116153 of process 0
+Process 0 received in element 18432 size of data 0 from 18 
+Time 0.00116914 of process 0
+Process 0 received in element 19456 size of data 0 from 19 
+Time 0.00117673 of process 0
+Process 0 received in element 20480 size of data 0 from 20 
+Time 0.00118389 of process 0
+Process 0 received in element 21504 size of data 0 from 21 
+Time 0.00119157 of process 0
+Process 0 received in element 22528 size of data 0 from 22 
+Time 0.00119804 of process 0
+Process 0 received in element 23552 size of data 0 from 23 
+Time 0.00120288 of process 0
+Process 0 received in element 24576 size of data 0 from 24 
+Time 0.00120785 of process 0
+Process 0 received in element 25600 size of data 0 from 25 
+Time 0.00121258 of process 0
+Process 0 received in element 26624 size of data 0 from 26 
+Time 0.00121794 of process 0
+Process 0 received in element 27648 size of data 0 from 27 
+Time 0.00122294 of process 0
+Process 0 received in element 28672 size of data 0 from 28 
+Time 0.00122812 of process 0
+Process 0 received in element 29696 size of data 0 from 29 
+Time 0.00123342 of process 0
+Process 0 received in element 30720 size of data 0 from 30 
+Time 0.001238 of process 0
+Process 0 received in element 31744 size of data 0 from 31 
+Time 0.00124284 of process 0
+mpirun -np 48 target/mpi 1 g 1024
+Process 0 received in element 1024 size of data 0 from 1 
+Time 0.00145156 of process 0
+Process 0 received in element 2048 size of data 0 from 2 
+Time 0.00170238 of process 0
+Process 0 received in element 3072 size of data 0 from 3 
+Time 0.00173602 of process 0
+Process 0 received in element 4096 size of data 0 from 4 
+Time 0.00174639 of process 0
+Process 0 received in element 5120 size of data 0 from 5 
+Time 0.00175478 of process 0
+Process 0 received in element 6144 size of data 0 from 6 
+Time 0.00176327 of process 0
+Process 0 received in element 7168 size of data 0 from 7 
+Time 0.00178723 of process 0
+Process 0 received in element 8192 size of data 0 from 8 
+Time 0.00179571 of process 0
+Process 0 received in element 9216 size of data 0 from 9 
+Time 0.00180396 of process 0
+Process 0 received in element 10240 size of data 0 from 10 
+Time 0.00181008 of process 0
+Process 0 received in element 11264 size of data 0 from 11 
+Time 0.00181614 of process 0
+Process 0 received in element 12288 size of data 0 from 12 
+Time 0.00182154 of process 0
+Process 0 received in element 13312 size of data 0 from 13 
+Time 0.00220081 of process 0
+Process 0 received in element 14336 size of data 0 from 14 
+Time 0.00221357 of process 0
+Process 0 received in element 15360 size of data 0 from 15 
+Time 0.00221945 of process 0
+Process 0 received in element 16384 size of data 0 from 16 
+Time 0.00440375 of process 0
+Process 0 received in element 17408 size of data 0 from 17 
+Time 0.00441314 of process 0
+Process 0 received in element 18432 size of data 0 from 18 
+Time 0.00441801 of process 0
+Process 0 received in element 19456 size of data 0 from 19 
+Time 0.00442551 of process 0
+Process 0 received in element 20480 size of data 0 from 20 
+Time 0.00443452 of process 0
+Process 0 received in element 21504 size of data 0 from 21 
+Time 0.00451396 of process 0
+Process 0 received in element 22528 size of data 0 from 22 
+Time 0.00452073 of process 0
+Process 0 received in element 23552 size of data 0 from 23 
+Time 0.00452621 of process 0
+Process 0 received in element 24576 size of data 0 from 24 
+Time 0.00453172 of process 0
+Process 0 received in element 25600 size of data 0 from 25 
+Time 0.0045363 of process 0
+Process 0 received in element 26624 size of data 0 from 26 
+Time 0.00454131 of process 0
+Process 0 received in element 27648 size of data 0 from 27 
+Time 0.0045464 of process 0
+Process 0 received in element 28672 size of data 0 from 28 
+Time 0.00455152 of process 0
+Process 0 received in element 29696 size of data 0 from 29 
+Time 0.00455645 of process 0
+Process 0 received in element 30720 size of data 0 from 30 
+Time 0.00456118 of process 0
+Process 0 received in element 31744 size of data 0 from 31 
+Time 0.00456599 of process 0
+Process 0 received in element 32768 size of data 0 from 32 
+Time 0.00457107 of process 0
+Process 0 received in element 33792 size of data 0 from 33 
+Time 0.00457567 of process 0
+Process 0 received in element 34816 size of data 0 from 34 
+Time 0.00458049 of process 0
+Process 0 received in element 35840 size of data 0 from 35 
+Time 0.00458536 of process 0
+Process 0 received in element 36864 size of data 0 from 36 
+Time 0.0051341 of process 0
+Process 0 received in element 37888 size of data 0 from 37 
+Time 0.00514755 of process 0
+Process 0 received in element 38912 size of data 0 from 38 
+Time 0.0051533 of process 0
+Process 0 received in element 39936 size of data 0 from 39 
+Time 0.00515882 of process 0
+Process 0 received in element 40960 size of data 0 from 40 
+Time 0.00537363 of process 0
+Process 0 received in element 41984 size of data 0 from 41 
+Time 0.00538571 of process 0
+Process 0 received in element 43008 size of data 0 from 42 
+Time 0.00539511 of process 0
+Process 0 received in element 44032 size of data 0 from 43 
+Time 0.00540317 of process 0
+Process 0 received in element 45056 size of data 0 from 44 
+Time 0.00541173 of process 0
+Process 0 received in element 46080 size of data 0 from 45 
+Time 0.00541932 of process 0
+Process 0 received in element 47104 size of data 0 from 46 
+Time 0.00542759 of process 0
+Process 0 received in element 48128 size of data 0 from 47 
+Time 0.00543638 of process 0
+mpirun -np 32 target/mpi 1 g 1048576
+Process 0 received in element 1048576 size of data 0 from 1 
+Time 0.0413972 of process 0
+Process 0 received in element 2097152 size of data 0 from 2 
+Time 0.0423385 of process 0
+Process 0 received in element 3145728 size of data 0 from 3 
+Time 0.0427576 of process 0
+Process 0 received in element 4194304 size of data 0 from 4 
+Time 0.0436339 of process 0
+Process 0 received in element 5242880 size of data 0 from 5 
+Time 0.0855153 of process 0
+Process 0 received in element 6291456 size of data 0 from 6 
+Time 0.0866389 of process 0
+Process 0 received in element 7340032 size of data 0 from 7 
+Time 0.0872752 of process 0
+Process 0 received in element 8388608 size of data 0 from 8 
+Time 0.0883744 of process 0
+Process 0 received in element 9437184 size of data 0 from 9 
+Time 0.0888195 of process 0
+Process 0 received in element 10485760 size of data 0 from 10 
+Time 0.0898394 of process 0
+Process 0 received in element 11534336 size of data 0 from 11 
+Time 0.0903279 of process 0
+Process 0 received in element 12582912 size of data 0 from 12 
+Time 0.0914452 of process 0
+Process 0 received in element 13631488 size of data 0 from 13 
+Time 0.0919433 of process 0
+Process 0 received in element 14680064 size of data 0 from 14 
+Time 0.0930474 of process 0
+Process 0 received in element 15728640 size of data 0 from 15 
+Time 0.0935048 of process 0
+Process 0 received in element 16777216 size of data 0 from 16 
+Time 0.0946217 of process 0
+Process 0 received in element 17825792 size of data 0 from 17 
+Time 0.0951026 of process 0
+Process 0 received in element 18874368 size of data 0 from 18 
+Time 0.0962198 of process 0
+Process 0 received in element 19922944 size of data 0 from 19 
+Time 0.0967372 of process 0
+Process 0 received in element 20971520 size of data 0 from 20 
+Time 0.0981079 of process 0
+Process 0 received in element 22020096 size of data 0 from 21 
+Time 0.0986286 of process 0
+Process 0 received in element 23068672 size of data 0 from 22 
+Time 0.0996697 of process 0
+Process 0 received in element 24117248 size of data 0 from 23 
+Time 0.100099 of process 0
+Process 0 received in element 25165824 size of data 0 from 24 
+Time 0.101171 of process 0
+Process 0 received in element 26214400 size of data 0 from 25 
+Time 0.101654 of process 0
+Process 0 received in element 27262976 size of data 0 from 26 
+Time 0.102748 of process 0
+Process 0 received in element 28311552 size of data 0 from 27 
+Time 0.1032 of process 0
+Process 0 received in element 29360128 size of data 0 from 28 
+Time 0.104299 of process 0
+Process 0 received in element 30408704 size of data 0 from 29 
+Time 0.104774 of process 0
+Process 0 received in element 31457280 size of data 0 from 30 
+Time 0.107318 of process 0
+Process 0 received in element 32505856 size of data 0 from 31 
+Time 0.110086 of process 0
+mpirun -np 48 target/mpi 1 g 1048576
+Process 0 received in element 1048576 size of data 0 from 1 
+Time 0.0447097 of process 0
+Process 0 received in element 2097152 size of data 0 from 2 
+Time 0.0452803 of process 0
+Process 0 received in element 3145728 size of data 0 from 3 
+Time 0.0493011 of process 0
+Process 0 received in element 4194304 size of data 0 from 4 
+Time 0.0708642 of process 0
+Process 0 received in element 5242880 size of data 0 from 5 
+Time 0.071766 of process 0
+Process 0 received in element 6291456 size of data 0 from 6 
+Time 0.0759225 of process 0
+Process 0 received in element 7340032 size of data 0 from 7 
+Time 0.076906 of process 0
+Process 0 received in element 8388608 size of data 0 from 8 
+Time 0.0773392 of process 0
+Process 0 received in element 9437184 size of data 0 from 9 
+Time 0.145534 of process 0
+Process 0 received in element 10485760 size of data 0 from 10 
+Time 0.146097 of process 0
+Process 0 received in element 11534336 size of data 0 from 11 
+Time 0.147004 of process 0
+Process 0 received in element 12582912 size of data 0 from 12 
+Time 0.147583 of process 0
+Process 0 received in element 13631488 size of data 0 from 13 
+Time 0.148426 of process 0
+Process 0 received in element 14680064 size of data 0 from 14 
+Time 0.148819 of process 0
+Process 0 received in element 15728640 size of data 0 from 15 
+Time 0.14979 of process 0
+Process 0 received in element 16777216 size of data 0 from 16 
+Time 0.150356 of process 0
+Process 0 received in element 17825792 size of data 0 from 17 
+Time 0.151279 of process 0
+Process 0 received in element 18874368 size of data 0 from 18 
+Time 0.151861 of process 0
+Process 0 received in element 19922944 size of data 0 from 19 
+Time 0.152751 of process 0
+Process 0 received in element 20971520 size of data 0 from 20 
+Time 0.153146 of process 0
+Process 0 received in element 22020096 size of data 0 from 21 
+Time 0.154026 of process 0
+Process 0 received in element 23068672 size of data 0 from 22 
+Time 0.154539 of process 0
+Process 0 received in element 24117248 size of data 0 from 23 
+Time 0.155381 of process 0
+Process 0 received in element 25165824 size of data 0 from 24 
+Time 0.155823 of process 0
+Process 0 received in element 26214400 size of data 0 from 25 
+Time 0.168283 of process 0
+Process 0 received in element 27262976 size of data 0 from 26 
+Time 0.168823 of process 0
+Process 0 received in element 28311552 size of data 0 from 27 
+Time 0.169879 of process 0
+Process 0 received in element 29360128 size of data 0 from 28 
+Time 0.170269 of process 0
+Process 0 received in element 30408704 size of data 0 from 29 
+Time 0.171142 of process 0
+Process 0 received in element 31457280 size of data 0 from 30 
+Time 0.1717 of process 0
+Process 0 received in element 32505856 size of data 0 from 31 
+Time 0.172599 of process 0
+Process 0 received in element 33554432 size of data 0 from 32 
+Time 0.172979 of process 0
+Process 0 received in element 34603008 size of data 0 from 33 
+Time 0.17394 of process 0
+Process 0 received in element 35651584 size of data 0 from 34 
+Time 0.174435 of process 0
+Process 0 received in element 36700160 size of data 0 from 35 
+Time 0.175359 of process 0
+Process 0 received in element 37748736 size of data 0 from 36 
+Time 0.175928 of process 0
+Process 0 received in element 38797312 size of data 0 from 37 
+Time 0.177547 of process 0
+Process 0 received in element 39845888 size of data 0 from 38 
+Time 0.177959 of process 0
+Process 0 received in element 40894464 size of data 0 from 39 
+Time 0.178852 of process 0
+Process 0 received in element 41943040 size of data 0 from 40 
+Time 0.179223 of process 0
+Process 0 received in element 42991616 size of data 0 from 41 
+Time 0.183092 of process 0
+Process 0 received in element 44040192 size of data 0 from 42 
+Time 0.183446 of process 0
+Process 0 received in element 45088768 size of data 0 from 43 
+Time 0.186645 of process 0
+Process 0 received in element 46137344 size of data 0 from 44 
+Time 0.187018 of process 0
+Process 0 received in element 47185920 size of data 0 from 45 
+Time 0.187842 of process 0
+Process 0 received in element 48234496 size of data 0 from 46 
+Time 0.188325 of process 0
+Process 0 received in element 49283072 size of data 0 from 47 
+Time 0.188813 of process 0

@@ -1,4 +1,5 @@
 #include "lab_one.hpp"
+#include "lab_three.hpp"
 #include "lab_two.hpp"
 #include <cstdlib>
 
@@ -75,6 +76,22 @@ int main(int argc, char **argv) {
       }
       break;
     }
+  case 3:
+    int size = strtoul(argv[2], rng, 10);
+    double **matrix = new double *[size];
+    for (int i = 0; i < size; ++i) {
+      double *row = new double[size];
+      for (int j = 0; j < size; j++) {
+        row[j] = rand();
+      }
+      matrix[i] = row;
+    }
+    double *multi = new double[size];
+    for (int i = 0; i < size; ++i) {
+      multi[i] = rand();
+    }
+    double *result = new double[size];
+    SGEMV(size, *matrix, multi, result);
     break;
   } //
   MPI::Finalize();
