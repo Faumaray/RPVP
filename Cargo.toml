@@ -1,0 +1,19 @@
+[package]
+name = "mpi"
+version = "0.1.0"
+edition = "2021"
+build = "build.rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+clap = { version = "4.0.18", features = ["derive"] }
+log = { version = "0.4.17", features = ["serde", "std"] }
+log4rs = "1.2.0"
+mpi = { version = "0.6.0", features = ["user-operations", "derive"] }
+num = "0.4.0"
+num-traits = "0.2.15"
+rand = "0.8.5"
+
+
+[package.metadata.cross.target.x86_64-unknown-linux-gnu]
+image = "my/rpvp:1.10.7"
