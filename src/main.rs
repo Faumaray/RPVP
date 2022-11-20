@@ -166,9 +166,11 @@ fn main() {
         Labs::Third(lab) => {
             let universer = mpi::initialize().unwrap();
             let executor = Executor::new(universer.world());
+            let t_start = mpi::time();
             let result: Vec<f32> = executor.sgemv(lab.random, lab.rows, lab.columns);
             if universer.world().rank() == 0 {
-                println!("result = {:?}", result);
+                println!("result = {:?}", result[0]);
+                println!("time = {}", mpi::time() - t_start);
             }
             // if lab.random {
             //     let mut rand = rand::thread_rng();
