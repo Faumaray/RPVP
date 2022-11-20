@@ -1,7 +1,7 @@
 use mpi::topology::SystemCommunicator;
 use mpi::traits::{Communicator, CommunicatorCollectives, Destination, Root, Source};
 
-use crate::lab_third::Matrix;
+use crate::lab_two::LabTwo;
 
 pub struct Executor {
     communicator: SystemCommunicator,
@@ -16,6 +16,15 @@ impl Executor {
             size: communicator.size(),
             rank: communicator.rank(),
         }
+    }
+    pub fn size(&self) -> i32 {
+        self.size
+    }
+    pub fn rank(&self) -> i32 {
+        self.rank
+    }
+    pub fn communicator(&self) -> SystemCommunicator {
+        self.communicator
     }
 }
 
@@ -81,14 +90,12 @@ where
     }
 
     fn sgemv(&self, generate: bool, rows: usize, columns: usize) -> Vec<T> {
-        use mpi::datatype::Partition;
-        use mpi::Count;
         let mut result: Vec<T> = vec![T::default(); columns];
         let mut local_vector: Vec<T> = vec![T::default(); columns];
         let local_matrix_flatten = if self.rank == 0 {
             let (mut matrix, vector) = Executor::generate_test_data(rows, columns, generate);
             local_vector = vector;
-            let (displs, counts) = self.get_distribution(rows, columns);
+            let (_, counts) = self.get_distribution(rows, columns);
             // let partition = Partition::new(&matrix, counts, displs);
             for rank in 1..self.size {
                 self.communicator.process_at_rank(rank).send(
@@ -125,4 +132,23 @@ where
 
         result
     }
+}
+
+impl<T> LabTwo<T> for Executor
+where
+    T: num::Num
+        + std::fmt::Display
+        + num::Signed
+        + Copy
+        + Default
+        + rand::distributions::uniform::SampleUniform
+        + std::clone::Clone
+        + std::ops::AddAssign
+        + num::FromPrimitive
+        + mpi::traits::Equivalence
+        + std::cmp::PartialOrd
+        + std::ops::MulAssign,
+    rand::distributions::Standard: rand::distributions::Distribution<T>,
+    f32: From<T>,
+{
 }

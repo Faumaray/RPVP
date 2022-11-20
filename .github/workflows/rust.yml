@@ -2,26 +2,23 @@ name: Rust
 
 on:
   push:
-    branches: [ "rust" ]
+    branches: ["rust"]
   pull_request:
-    branches: [ "rust" ]
+    branches: ["rust"]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   build:
-
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: mpi4py/setup-mpi@v1
-    - name: Build
-      run: cargo build --release
-    - name: Test run
-      run: mpiexec -n 48 target/release/mpi.exe third 48000 48000
-    - uses: actions/upload-artifact@v3
-      with:
-        name: Output for windows
-        path: target/release/mpi.exe
+      - uses: actions/checkout@v3
+      - uses: mpi4py/setup-mpi@v1
+      - name: Build
+        run: cargo build --release
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Output for windows
+          path: target/release/mpi.exe

@@ -1,5 +1,12 @@
+#![feature(associated_type_defaults)]
+mod executor;
+mod lab_one;
+mod lab_third;
+mod lab_two;
+
 use clap::{Args, Parser, Subcommand};
 use lab_one::*;
+use lab_two::LabTwo;
 use log::LevelFilter;
 use log4rs::{
     append::{console::ConsoleAppender, file::FileAppender},
@@ -11,9 +18,7 @@ use mpi::traits::Communicator;
 
 use self::executor::Executor;
 // use self::lab_third::Matrix;
-mod executor;
-mod lab_one;
-mod lab_third;
+
 use crate::lab_third::LabThree;
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -35,7 +40,7 @@ enum Labs {
 struct Third {
     rows: usize,
     columns: usize,
-    #[arg(default_value_t = false)]
+    #[arg(short, long, default_value_t = false)]
     random: bool,
 }
 
@@ -122,9 +127,37 @@ fn main() {
         Labs::Second(lab) => match lab.name.as_str() {
             "midpoint" => {
                 setup_loger(None);
+                let universer = mpi::initialize().unwrap();
+                let executor = Executor::new(universer.world());
+                let result: f32 = Executor::midpoint_rule(
+                    executor,
+                    0.000001,
+                    |x| (1.0 - (0.7 / x).exp()) / (2.0 + x),
+                    (1.0, 2.0),
+                );
+                if universer.world().rank() == 0 {
+                    println!("result = {:?}", result);
+                }
             }
             "montecarlo" => {
                 setup_loger(None);
+                let universer = mpi::initialize().unwrap();
+                let executor = Executor::new(universer.world());
+                let result: f32 = Executor::monte_carlo(
+                    executor,
+                    |x, y| {
+                        if x < 0.0 || x > 1.0 || y < 2.0 || y > 5.0 {
+                            return None;
+                        }
+                        Some(x / y.powi(2))
+                    },
+                    0.0..1.0,
+                    2.0..5.0,
+                    lab.count.unwrap().try_into().unwrap(),
+                );
+                if universer.world().rank() == 0 {
+                    println!("result = {:?}", result);
+                }
             }
             _ => {
                 unreachable!();

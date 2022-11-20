@@ -1,5 +1,4 @@
 pub use num_traits::Num;
-pub type Matrix<T> = Vec<Vec<T>>;
 
 pub trait LabThree<T>
 where

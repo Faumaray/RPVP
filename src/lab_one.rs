@@ -1,7 +1,6 @@
 extern crate mpi;
 
 use log::info;
-use log::trace;
 use mpi::traits::*;
 pub fn ring(size: usize) {
     let universe = mpi::initialize().unwrap();
