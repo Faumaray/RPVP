@@ -1,5 +1,3 @@
-use std::vec::Drain;
-
 use log::{info, trace};
 use mpi::topology::SystemCommunicator;
 use mpi::traits::{Communicator, CommunicatorCollectives, Destination, Root, Source};
@@ -50,65 +48,45 @@ where
         + mpi::traits::AsDatatype
         + mpi::traits::BufferMut,
 {
-    fn get_distribution(&self, rows: usize, columns: usize) -> (Vec<i32>, Vec<i32>) {
-        use mpi::Count;
-        println!(
+    fn get_distribution(&self, rows: usize, columns: usize) -> Vec<i32> {
+        trace!(
             "{}/{}={}",
             rows,
             self.size as usize,
             rows % self.size as usize
         );
-        let counts: Vec<Count> = {
-            let mut tmp = Vec::new();
-            if rows % self.size as usize == 0 {
-                let count = (rows as i32 / self.size) * columns as i32;
-                trace!("count = {}", count);
-                for _ in 0..self.size {
-                    tmp.push(count);
-                }
-            } else {
-                let count = ((rows as i32 - (rows % self.size as usize) as i32) / self.size)
+        if rows % self.size as usize == 0 {
+            vec![(rows as i32 / self.size) * columns as i32; self.size as usize]
+        } else {
+            let mut tmp = vec![
+                ((rows as i32 - (rows % self.size as usize) as i32) / self.size)
                     * columns as i32;
-                let remain = (rows as i32 % self.size) * columns as i32;
-                trace!("count = {}", count);
-                trace!("remain = {}", remain);
-                for _ in 0..self.size - 1 {
-                    tmp.push(count);
-                }
-                tmp.push(count + remain);
-            }
-            tmp.shrink_to_fit();
+                self.size as usize
+            ];
+            tmp[self.size as usize - 1] += (rows as i32 % self.size) * columns as i32;
             tmp
-        };
-        let displs: Vec<i32> = counts
-            .iter()
-            .scan(0, |acc, &x| {
-                let tmp = *acc;
-                *acc += x;
-                Some(tmp)
-            })
-            .collect();
-        println!("{}", displs.last().unwrap());
-        (displs, counts)
+        }
     }
 
     fn sgemv(&self, generate: bool, rows: usize, columns: usize) -> Vec<T> {
         let mut result: Vec<T> = vec![T::default(); columns];
-        let mut local_vector: Vec<T> = vec![T::default(); columns];
-        let local_matrix_flatten = if self.rank == 0 {
+
+        let (local_matrix_flatten, mut local_vector) = if self.rank == 0 {
             let (mut matrix, vector) = Executor::generate_test_data(rows, columns, generate);
-            local_vector = vector;
-            let (_, counts) = self.get_distribution(rows, columns);
-            // let partition = Partition::new(&matrix, counts, displs);
+            let counts = self.get_distribution(rows, columns);
+            // TODO!: Find way to use ISEND
             for rank in 1..self.size {
                 self.communicator
                     .process_at_rank(rank)
                     .send(matrix.drain(0..counts[rank as usize] as usize).as_slice());
                 info!("0 send to {}", rank);
             }
-            matrix
+            (matrix, vector)
         } else {
-            self.communicator.process_at_rank(0).receive_vec().0
+            (
+                self.communicator.process_at_rank(0).receive_vec().0,
+                vec![T::default(); columns],
+            )
         };
         self.communicator
             .process_at_rank(0)

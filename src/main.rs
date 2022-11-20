@@ -14,7 +14,6 @@ use log4rs::{
     encode::pattern::PatternEncoder,
     filter::threshold::ThresholdFilter,
 };
-use mpi::traits::Communicator;
 
 use self::executor::Executor;
 // use self::lab_third::Matrix;
@@ -129,21 +128,18 @@ fn main() {
                 setup_loger(None);
                 let universer = mpi::initialize().unwrap();
                 let executor = Executor::new(universer.world());
-                let result: f32 = Executor::midpoint_rule(
+                let _: f32 = Executor::midpoint_rule(
                     executor,
                     0.000001,
                     |x| (1.0 - (0.7 / x).exp()) / (2.0 + x),
                     (1.0, 2.0),
                 );
-                if universer.world().rank() == 0 {
-                    println!("result = {:?}", result);
-                }
             }
             "montecarlo" => {
                 setup_loger(None);
                 let universer = mpi::initialize().unwrap();
                 let executor = Executor::new(universer.world());
-                let result: f32 = Executor::monte_carlo(
+                let _: f32 = Executor::monte_carlo(
                     executor,
                     |x, y| {
                         if x < 0.0 || x > 1.0 || y < 2.0 || y > 5.0 {
@@ -155,9 +151,6 @@ fn main() {
                     2.0..5.0,
                     lab.count.unwrap().try_into().unwrap(),
                 );
-                if universer.world().rank() == 0 {
-                    println!("result = {:?}", result);
-                }
             }
             _ => {
                 unreachable!();
@@ -166,45 +159,7 @@ fn main() {
         Labs::Third(lab) => {
             let universer = mpi::initialize().unwrap();
             let executor = Executor::new(universer.world());
-            let t_start = mpi::time();
-            let result: Vec<f32> = executor.sgemv(lab.random, lab.rows, lab.columns);
-            if universer.world().rank() == 0 {
-                println!("result = {:?}", result[0]);
-                println!("time = {}", mpi::time() - t_start);
-            }
-            // if lab.random {
-            //     let mut rand = rand::thread_rng();
-            //     let matrix = {
-            //         let mut inner: Vec<Vec<f32>> = Vec::new();
-            //         for _ in 0..lab.rows {
-            //             let mut tmp: Vec<f32> = Vec::new();
-            //             for _ in 0..lab.columns {
-            //                 let value: f32 = rand.gen();
-            //                 tmp.push(value);
-            //             }
-            //             inner.push(tmp);
-            //         }
-            //         Matrix::new(inner)
-            //     };
-            //     let multi = {
-            //         let mut out = Vec::new();
-            //         for _ in 0..lab.columns {
-            //             let value: f32 = rand.gen();
-            //             out.push(value);
-            //         }
-            //         out
-            //     };
-            //     matrix.sgemv(multi);
-            // } else {
-            //     let vector = vec![0.75; lab.columns];
-            //     let matrix = Matrix::new(vec![vec![2.5; lab.columns]; lab.rows]);
-            //     // println!("{}", matrix);
-            //     // println!("{:?}", vector);
-            //     matrix.sgemv(vector);
-            // }
-            // debug!("{}", matrix);
-            // println!("vector = {:?}", multi);
-            // let result = matrix.sgemv(multi);
+            let _: Vec<f32> = executor.sgemv(lab.random, lab.rows, lab.columns);
         }
     }
 }
