@@ -1,3 +1,6 @@
+use std::vec::Drain;
+
+use log::{info, trace};
 use mpi::topology::SystemCommunicator;
 use mpi::traits::{Communicator, CommunicatorCollectives, Destination, Root, Source};
 
@@ -59,7 +62,7 @@ where
             let mut tmp = Vec::new();
             if rows % self.size as usize == 0 {
                 let count = (rows as i32 / self.size) * columns as i32;
-                println!("count = {}", count);
+                trace!("count = {}", count);
                 for _ in 0..self.size {
                     tmp.push(count);
                 }
@@ -67,8 +70,8 @@ where
                 let count = ((rows as i32 - (rows % self.size as usize) as i32) / self.size)
                     * columns as i32;
                 let remain = (rows as i32 % self.size) * columns as i32;
-                println!("count = {}", count);
-                println!("remain = {}", remain);
+                trace!("count = {}", count);
+                trace!("remain = {}", remain);
                 for _ in 0..self.size - 1 {
                     tmp.push(count);
                 }
@@ -98,13 +101,10 @@ where
             let (_, counts) = self.get_distribution(rows, columns);
             // let partition = Partition::new(&matrix, counts, displs);
             for rank in 1..self.size {
-                self.communicator.process_at_rank(rank).send(
-                    &matrix
-                        .drain(0..counts[rank as usize] as usize)
-                        .collect::<Vec<T>>(),
-                );
-                matrix.shrink_to_fit();
-                println!("0 send to {}", rank);
+                self.communicator
+                    .process_at_rank(rank)
+                    .send(matrix.drain(0..counts[rank as usize] as usize).as_slice());
+                info!("0 send to {}", rank);
             }
             matrix
         } else {
