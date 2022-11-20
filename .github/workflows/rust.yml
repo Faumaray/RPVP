@@ -16,8 +16,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: mpi4py/setup-mpi@v1
-      - name: Build
-        run: cargo build --release
+      - name: Install minimal nightly
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+      - name: Run cargo check
+          uses: actions-rs/cargo@v1
+          with:
+            command: build --release
       - uses: actions/upload-artifact@v3
         with:
           name: Output for windows
