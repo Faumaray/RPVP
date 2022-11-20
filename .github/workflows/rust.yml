@@ -19,6 +19,8 @@ jobs:
     - uses: mpi4py/setup-mpi@v1
     - name: Build
       run: cargo build --release
+    - name: Test run
+      run: mpiexec -n 48 target/release/mpi.exe third 48000 48000
     - uses: actions/upload-artifact@v3
       with:
         name: Output for windows
