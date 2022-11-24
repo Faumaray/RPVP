@@ -13,6 +13,7 @@ use log4rs::{
     encode::pattern::PatternEncoder,
     filter::threshold::ThresholdFilter,
 };
+use systemstat::Platform;
 
 use self::executor::Executor;
 // use self::lab_third::Matrix;
@@ -162,29 +163,27 @@ fn main() {
             let universer = mpi::initialize().unwrap();
             let executor = Executor::new(universer.world());
             {
-                let needed: u64 = (32 * lab.columns as u64 * lab.rows as u64)
-                    + (32 * lab.columns as u64 * executor.size() as u64 * 2)
-                    + (32 * executor.size() as u64);
-                let available = sys_info::mem_info().unwrap().avail;
-                let free = sys_info::mem_info().unwrap().free;
-                let swap_free = sys_info::mem_info().unwrap().swap_free;
-                if available <= needed {
+                let needed = bytesize::ByteSize::b(
+                    ((32 * lab.columns as u64 * lab.rows as u64)
+                        + (32 * lab.columns as u64 * executor.size() as u64 * 2)
+                        + (32 * executor.size() as u64))
+                        / 8,
+                );
+                let (mem, swap) = systemstat::System::new().memory_and_swap().unwrap();
+                let free = mem.free;
+                if free <= needed {
                     if executor.rank() == 0 {
                         log::error!("Not enough available RAM + SWAP");
-                        let (mut amount, mut suf) = unbytify::bytify(available);
-                        log::error!("Available total: {}{}", amount, suf);
-                        (amount, suf) = unbytify::bytify(free);
-                        log::error!("Free: {}{}", amount, suf);
-                        (amount, suf) = unbytify::bytify(swap_free);
-                        log::error!("Swap: {}{}", amount, suf);
-                        (amount, suf) = unbytify::bytify(needed);
-                        log::error!("Needed {}{}", amount, suf);
+                        log::error!("Available total: {}", mem.total);
+                        log::error!("Free: {}", free);
+                        log::error!("Swap: {}", swap.total);
+                        log::error!("Swap free: {}", swap.free);
+                        log::error!("Needed {}", needed);
                     }
                     return;
                 }
                 if executor.rank() == 0 {
-                    let (needed, suf) = unbytify::bytify(needed);
-                    log::warn!("Will be used amount {}{} of memory", needed, suf);
+                    log::warn!("Will be used {} of memory", needed);
                 }
             }
             let _: Vec<f32> = executor.sgemv(lab.random, lab.rows, lab.columns);
