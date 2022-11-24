@@ -170,12 +170,11 @@ fn main() {
                         / 8,
                 );
                 let (mem, swap) = systemstat::System::new().memory_and_swap().unwrap();
-                let free = mem.free;
-                if free <= needed {
+                if mem.free + swap.free <= needed {
                     if executor.rank() == 0 {
                         log::error!("Not enough available RAM + SWAP");
                         log::error!("Available total: {}", mem.total);
-                        log::error!("Free: {}", free);
+                        log::error!("Free: {}", mem.free);
                         log::error!("Swap: {}", swap.total);
                         log::error!("Swap free: {}", swap.free);
                         log::error!("Needed {}", needed);
