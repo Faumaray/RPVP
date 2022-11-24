@@ -69,8 +69,9 @@ where
         }
     }
 
-    fn sgemv(&self, generate: bool, rows: usize, columns: usize, result: &mut Vec<T>) {
+    fn sgemv(&self, generate: bool, rows: usize, columns: usize) -> Vec<T> {
         trace!("[{}] Entered in SGEMV", self.rank);
+        let mut result: Vec<T> = vec![T::default(); columns];
         let (mut matrix, mut vector) =
             Executor::generate_test_data(rows, columns, generate, self.rank);
         trace!("[{}] Generated Matrix and Vector", self.size);
@@ -125,13 +126,14 @@ where
 
         self.communicator.all_reduce_into(
             &local_value,
-            result,
+            &mut result,
             mpi::collective::SystemOperation::sum(),
         );
         if self.rank == 0 {
             info!("Time: {}", mpi::time() - t_start);
             info!("First value: {} ", result[0]);
         }
+        result
     }
 }
 

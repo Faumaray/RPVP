@@ -41,5 +41,5 @@ where
     }
     fn get_distribution(&self, rows: usize, columns: usize) -> Vec<i32>;
     #[allow(patterns_in_fns_without_body)]
-    fn sgemv(&self, generate: bool, rows: usize, columns: usize, result: &mut Vec<T>);
+    fn sgemv(&self, generate: bool, rows: usize, columns: usize) -> Vec<T>;
 }
