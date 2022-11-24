@@ -70,10 +70,12 @@ where
     }
 
     fn sgemv(&self, generate: bool, rows: usize, columns: usize, mut result: Vec<T>) {
-        let (matrix, mut vector) = Executor::generate_test_data(rows, columns, generate, self.rank);
+        let (mut matrix, mut vector) =
+            Executor::generate_test_data(rows, columns, generate, self.rank);
+        let mut local_matrix: Vec<T> = vec![];
         let mut t_start = 0.0;
-        mpi::request::multiple_scope(self.size as usize, |scope, col| {
-            if self.rank == 0 {
+        if self.rank == 0 {
+            mpi::request::multiple_scope(self.size as usize, |scope, col| {
                 let counts = self.get_distribution(rows, columns);
                 trace!("Vector: {}", vector[0]);
                 // TODO!: Find way to use ISEND
@@ -87,8 +89,14 @@ where
                     info!("0 send to {}", rank);
                 }
                 col.wait_all(&mut Vec::new());
-            }
-            let matrix = self.communicator.process_at_rank(0).receive_vec().0;
+            });
+        }
+        mpi::request::multiple_scope(self.size as usize, |scope_two, coll| {
+            coll.add(
+                self.communicator
+                    .process_at_rank(0)
+                    .immediate_receive_into(scope_two, matrix.as_mut()),
+            );
             trace!("[{}]Vector: {}", self.rank, vector[0]);
             self.communicator
                 .process_at_rank(0)
