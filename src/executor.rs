@@ -1,4 +1,4 @@
-use log::{info, trace};
+use log::{debug, info, trace};
 use mpi::topology::SystemCommunicator;
 use mpi::traits::{Communicator, CommunicatorCollectives, Destination, Root, Source};
 
@@ -50,7 +50,7 @@ where
         + mpi::traits::BufferMut,
 {
     fn get_distribution(&self, rows: usize, columns: usize) -> Vec<i32> {
-        trace!(
+        debug!(
             "{}/{}={}",
             rows,
             self.size as usize,
@@ -77,27 +77,30 @@ where
         trace!("[{}] Generated Matrix and Vector", self.rank);
         let mut t_start = 0.0;
         if self.rank == 0 {
+            let counts = self.get_distribution(rows, columns);
             mpi::request::multiple_scope(self.size as usize, |scope, col| {
                 trace!("[{}] Entered first scope", self.rank);
-                let counts = self.get_distribution(rows, columns);
                 trace!("[{}] Calculated distribution", self.rank);
-                trace!("Vector: {}", vector[0]);
+                debug!("Vector: {}", vector[0]);
                 t_start = mpi::time();
-                for rank in 0..self.size {
-                    col.add(
-                        self.communicator
-                            .process_at_rank(rank)
-                            .immediate_send(scope, &matrix[0..counts[rank as usize] as usize]),
-                    );
+                for rank in 1..self.size {
+                    let prev = counts[rank as usize - 1] as usize;
+                    col.add(self.communicator.process_at_rank(rank).immediate_send(
+                        scope,
+                        &matrix[prev..counts[rank as usize - 1] as usize + prev],
+                    ));
                     info!("[{}] Send slice of matrix to {}", self.rank, rank);
                 }
                 col.wait_all(&mut Vec::new());
             });
+            trace!("[{}] Exited first scope", self.rank);
+            matrix = matrix[0..counts[0] as usize].to_vec();
+        } else {
+            matrix = self.communicator.process_at_rank(0).receive_vec().0;
         }
-        matrix = self.communicator.process_at_rank(0).receive_vec().0;
         trace!("[{}] Get local matrix slice", self.rank);
 
-        trace!(
+        debug!(
             "[{}]Vector length before broadcast: {}",
             self.rank,
             vector.len()
@@ -105,7 +108,7 @@ where
         self.communicator
             .process_at_rank(0)
             .broadcast_into(&mut vector);
-        trace!(
+            debug!(
             "[{}]Vector length after broadcast: {}",
             self.rank,
             vector.len()
@@ -121,7 +124,7 @@ where
             if column == columns {
                 column = 0;
                 row += 1;
-                info!("[{}] Computed {} row: {}", self.rank, row, local_value[0])
+                trace!("[{}] Computed {} row: {}", self.rank, row, local_value[0])
             }
         }
 

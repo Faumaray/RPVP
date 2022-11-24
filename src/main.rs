@@ -7,7 +7,6 @@ mod lab_two;
 use clap::{Args, Parser, Subcommand};
 use lab_one::*;
 use lab_two::LabTwo;
-use log::LevelFilter;
 use log4rs::{
     append::{console::ConsoleAppender, file::FileAppender},
     config::{Appender, Root},
@@ -25,6 +24,8 @@ use crate::lab_third::LabThree;
 struct Cli {
     #[command(subcommand)]
     laboratory: Labs,
+    #[arg(short, long, default_value_t = log::LevelFilter::Info)]
+    verbose: log::LevelFilter,
 }
 #[derive(Subcommand)]
 enum Labs {
@@ -66,7 +67,7 @@ struct Second {
     count: Option<usize>,
 }
 
-fn setup_loger(file: Option<&str>) {
+fn setup_loger(file: Option<&str>, level: log::LevelFilter) {
     let stdout: ConsoleAppender = ConsoleAppender::builder()
         .encoder(Box::new(PatternEncoder::new("{h({m})}\n")))
         .build();
@@ -81,19 +82,19 @@ fn setup_loger(file: Option<&str>) {
             .appender(Appender::builder().build("stdout", Box::new(stdout)))
             .appender(
                 Appender::builder()
-                    .filter(Box::new(ThresholdFilter::new(LevelFilter::Info)))
+                    .filter(Box::new(ThresholdFilter::new(log::LevelFilter::Trace)))
                     .build("logfile", Box::new(logfile)),
             )
             .build(
                 Root::builder()
                     .appender("logfile")
                     .appender("stdout")
-                    .build(LevelFilter::Trace),
+                    .build(level),
             )
     } else {
         log4rs::config::Config::builder()
             .appender(Appender::builder().build("stdout", Box::new(stdout)))
-            .build(Root::builder().appender("stdout").build(LevelFilter::Trace))
+            .build(Root::builder().appender("stdout").build(level))
     };
 
     log4rs::init_config(log_config.unwrap()).unwrap();
@@ -104,19 +105,19 @@ fn main() {
     match &cli.laboratory {
         Labs::First(lab) => match lab.name.as_str() {
             "ring" => {
-                setup_loger(Some("ring"));
+                setup_loger(Some("ring"),cli.verbose);
                 ring(lab.buffer_size);
             }
             "broadcast" => {
-                setup_loger(Some("broadcast"));
+                setup_loger(Some("broadcast"),cli.verbose);
                 broadcast(lab.buffer_size);
             }
             "gather" => {
-                setup_loger(Some("gather"));
+                setup_loger(Some("gather"),cli.verbose);
                 gather(lab.buffer_size);
             }
             "alltoall" => {
-                setup_loger(Some("alltoall"));
+                setup_loger(Some("alltoall"),cli.verbose);
                 alltoall(lab.buffer_size);
             }
             _ => {
@@ -125,7 +126,7 @@ fn main() {
         },
         Labs::Second(lab) => match lab.name.as_str() {
             "midpoint" => {
-                setup_loger(None);
+                setup_loger(None,cli.verbose);
                 let universer = mpi::initialize().unwrap();
                 let executor = Executor::new(universer.world());
                 let _: f32 = Executor::midpoint_rule(
@@ -136,7 +137,7 @@ fn main() {
                 );
             }
             "montecarlo" => {
-                setup_loger(None);
+                setup_loger(None,cli.verbose);
                 let universer = mpi::initialize().unwrap();
                 let executor = Executor::new(universer.world());
                 let _: f32 = Executor::monte_carlo(
@@ -157,7 +158,7 @@ fn main() {
             }
         },
         Labs::Third(lab) => {
-            setup_loger(None);
+            setup_loger(None,cli.verbose);
             let universer = mpi::initialize().unwrap();
             let executor = Executor::new(universer.world());
             let _: Vec<f32> = executor.sgemv(lab.random, lab.rows, lab.columns);
