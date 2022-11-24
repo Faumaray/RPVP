@@ -74,7 +74,7 @@ where
         let mut result: Vec<T> = vec![T::default(); columns];
         let (mut matrix, mut vector) =
             Executor::generate_test_data(rows, columns, generate, self.rank);
-        trace!("[{}] Generated Matrix and Vector", self.size);
+        trace!("[{}] Generated Matrix and Vector", self.rank);
         let mut t_start = 0.0;
         if self.rank == 0 {
             mpi::request::multiple_scope(self.size as usize, |scope, col| {
@@ -91,7 +91,7 @@ where
                     );
                     info!("[{}] Send slice of matrix to {}", self.rank, rank);
                 }
-                col.wait_all(&mut Vec::new());
+                col.wait_any();
             });
         }
         mpi::request::multiple_scope(
