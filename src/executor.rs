@@ -72,7 +72,6 @@ where
     fn sgemv(&self, generate: bool, rows: usize, columns: usize, mut result: Vec<T>) {
         let (mut matrix, mut vector) =
             Executor::generate_test_data(rows, columns, generate, self.rank);
-        let mut local_matrix: Vec<T> = vec![];
         let mut t_start = 0.0;
         if self.rank == 0 {
             mpi::request::multiple_scope(self.size as usize, |scope, col| {
@@ -91,39 +90,43 @@ where
                 col.wait_all(&mut Vec::new());
             });
         }
-        mpi::request::multiple_scope(self.size as usize, |scope_two, coll| {
-            coll.add(
-                self.communicator
-                    .process_at_rank(0)
-                    .immediate_receive_into(scope_two, matrix.as_mut()),
-            );
-            trace!("[{}]Vector: {}", self.rank, vector[0]);
-            self.communicator
-                .process_at_rank(0)
-                .broadcast_into(&mut vector);
-            trace!("[{}]Vector: {}", self.rank, vector[0]);
+        mpi::request::multiple_scope(
+            self.size as usize,
+            |scope_two, coll: &mut mpi::request::RequestCollection<'_, _>| {
+                coll.add(
+                    self.communicator
+                        .process_at_rank(0)
+                        .immediate_receive_into(scope_two, &mut matrix),
+                );
+                coll.wait_all(&mut Vec::new());
+            },
+        );
+        trace!("[{}]Vector: {}", self.rank, vector[0]);
+        self.communicator
+            .process_at_rank(0)
+            .broadcast_into(&mut vector);
+        trace!("[{}]Vector: {}", self.rank, vector[0]);
 
-            let mut column = 0;
+        let mut column = 0;
 
-            let mut local_value: Vec<T> = vec![T::default(); columns];
-            for value in matrix {
-                local_value[column] += vector[column] * value;
-                column += 1;
-                if column == columns {
-                    column = 0;
-                }
+        let mut local_value: Vec<T> = vec![T::default(); columns];
+        for value in matrix {
+            local_value[column] += vector[column] * value;
+            column += 1;
+            if column == columns {
+                column = 0;
             }
+        }
 
-            self.communicator.all_reduce_into(
-                &local_value,
-                &mut result,
-                mpi::collective::SystemOperation::sum(),
-            );
-            if self.rank == 0 {
-                info!("Time: {}", mpi::time() - t_start);
-                info!("First value: {} ", result[0]);
-            }
-        });
+        self.communicator.all_reduce_into(
+            &local_value,
+            &mut result,
+            mpi::collective::SystemOperation::sum(),
+        );
+        if self.rank == 0 {
+            info!("Time: {}", mpi::time() - t_start);
+            info!("First value: {} ", result[0]);
+        }
     }
 }
 
