@@ -75,7 +75,7 @@ where
         mpi::request::multiple_scope(self.size as usize, |scope, col| {
             if self.rank == 0 {
                 let counts = self.get_distribution(rows, columns);
-
+                trace!("Vector: {}", vector[0]);
                 // TODO!: Find way to use ISEND
                 t_start = mpi::time();
                 for rank in 0..self.size {
@@ -89,10 +89,12 @@ where
                 col.wait_all(&mut Vec::new());
             }
             let matrix = self.communicator.process_at_rank(0).receive_vec().0;
-
+            trace!("[{}]Vector: {}", self.rank, vector[0]);
             self.communicator
                 .process_at_rank(0)
                 .broadcast_into(&mut vector);
+            trace!("[{}]Vector: {}", self.rank, vector[0]);
+
             let mut column = 0;
 
             let mut local_value: Vec<T> = vec![T::default(); columns];
