@@ -89,7 +89,7 @@ where
                             .process_at_rank(rank)
                             .immediate_send(scope, &matrix[0..counts[rank as usize] as usize]),
                     );
-                    info!("0 send to {}", rank);
+                    info!("[{}] Send slice of matrix to {}", self.rank, rank);
                 }
                 col.wait_all(&mut Vec::new());
             });
@@ -107,13 +107,14 @@ where
                 trace!("[{}] Get local matrix slice", self.rank);
             },
         );
-        trace!("[{}]Vector: {}", self.rank, vector[0]);
+        trace!("[{}]Vector length: {}", self.rank, vector.len());
         self.communicator
             .process_at_rank(0)
             .broadcast_into(&mut vector);
-        trace!("[{}]Vector: {}", self.rank, vector[0]);
+        trace!("[{}]Vector length: {}", self.rank, vector.len());
 
         let mut column = 0;
+        let mut row: usize = 0;
 
         let mut local_value: Vec<T> = vec![T::default(); columns];
         for value in matrix {
@@ -121,6 +122,8 @@ where
             column += 1;
             if column == columns {
                 column = 0;
+                row += 1;
+                info!("[{}] Computed {} row: {}", self.rank, row, local_value[0])
             }
         }
 
