@@ -77,7 +77,7 @@ where
         trace!("[{}] Generated Matrix and Vector", self.rank);
         let mut t_start = 0.0;
         if self.rank == 0 {
-            mpi::request::multiple_scope(self.size as usize * 2, |scope, col| {
+            mpi::request::multiple_scope(self.size as usize, |scope, col| {
                 trace!("[{}] Entered first scope", self.rank);
                 let counts = self.get_distribution(rows, columns);
                 trace!("[{}] Calculated distribution", self.rank);
@@ -87,42 +87,29 @@ where
                     col.add(
                         self.communicator
                             .process_at_rank(rank)
-                            .immediate_send_with_tag(
-                                scope,
-                                &matrix[0..counts[rank as usize] as usize],
-                                0,
-                            ),
+                            .immediate_send(scope, &matrix[0..counts[rank as usize] as usize]),
                     );
                     info!("[{}] Send slice of matrix to {}", self.rank, rank);
-                    col.add(
-                        self.communicator
-                            .process_at_rank(rank)
-                            .immediate_send_with_tag(scope, &vector, 1),
-                    );
-                    info!("[{}] Send vector to {}", self.rank, rank);
                 }
                 col.wait_all(&mut Vec::new());
             });
         }
-        mpi::request::multiple_scope(
-            self.size as usize * 2,
-            |scope_two, coll: &mut mpi::request::RequestCollection<'_, _>| {
-                trace!("[{}] Entered second scope", self.rank);
-                coll.add(
-                    self.communicator
-                        .process_at_rank(0)
-                        .immediate_receive_into_with_tag(scope_two, &mut matrix, 0),
-                );
-                coll.add(
-                    self.communicator
-                        .process_at_rank(0)
-                        .immediate_receive_into_with_tag(scope_two, &mut vector, 1),
-                );
-                coll.wait_all(&mut Vec::new());
-                trace!("[{}] Get local matrix slice and vector", self.rank);
-            },
+        matrix = self.communicator.process_at_rank(0).receive_vec().0;
+        trace!("[{}] Get local matrix slice", self.rank);
+
+        trace!(
+            "[{}]Vector length before broadcast: {}",
+            self.rank,
+            vector.len()
         );
-        trace!("[{}]Vector length: {}", self.rank, vector.len());
+        self.communicator
+            .process_at_rank(0)
+            .broadcast_into(&mut vector);
+        trace!(
+            "[{}]Vector length after broadcast: {}",
+            self.rank,
+            vector.len()
+        );
 
         let mut column = 0;
         let mut row: usize = 0;

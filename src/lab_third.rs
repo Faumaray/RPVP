@@ -36,7 +36,7 @@ where
                 )
             }
         } else {
-            (Vec::new(), Vec::new())
+            (Vec::new(), vec![T::default(); columns])
         }
     }
     fn get_distribution(&self, rows: usize, columns: usize) -> Vec<i32>;
