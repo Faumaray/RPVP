@@ -105,19 +105,19 @@ fn main() {
     match &cli.laboratory {
         Labs::First(lab) => match lab.name.as_str() {
             "ring" => {
-                setup_loger(Some("ring"),cli.verbose);
+                setup_loger(Some("ring"), cli.verbose);
                 ring(lab.buffer_size);
             }
             "broadcast" => {
-                setup_loger(Some("broadcast"),cli.verbose);
+                setup_loger(Some("broadcast"), cli.verbose);
                 broadcast(lab.buffer_size);
             }
             "gather" => {
-                setup_loger(Some("gather"),cli.verbose);
+                setup_loger(Some("gather"), cli.verbose);
                 gather(lab.buffer_size);
             }
             "alltoall" => {
-                setup_loger(Some("alltoall"),cli.verbose);
+                setup_loger(Some("alltoall"), cli.verbose);
                 alltoall(lab.buffer_size);
             }
             _ => {
@@ -126,7 +126,7 @@ fn main() {
         },
         Labs::Second(lab) => match lab.name.as_str() {
             "midpoint" => {
-                setup_loger(None,cli.verbose);
+                setup_loger(None, cli.verbose);
                 let universer = mpi::initialize().unwrap();
                 let executor = Executor::new(universer.world());
                 let _: f32 = Executor::midpoint_rule(
@@ -137,7 +137,7 @@ fn main() {
                 );
             }
             "montecarlo" => {
-                setup_loger(None,cli.verbose);
+                setup_loger(None, cli.verbose);
                 let universer = mpi::initialize().unwrap();
                 let executor = Executor::new(universer.world());
                 let _: f32 = Executor::monte_carlo(
@@ -158,9 +158,35 @@ fn main() {
             }
         },
         Labs::Third(lab) => {
-            setup_loger(None,cli.verbose);
+            setup_loger(None, cli.verbose);
             let universer = mpi::initialize().unwrap();
             let executor = Executor::new(universer.world());
+            {
+                let needed: u64 = (32 * lab.columns as u64 * lab.rows as u64)
+                    + (32 * lab.columns as u64 * executor.size() as u64 * 2)
+                    + (32 * executor.size() as u64);
+                let available = sys_info::mem_info().unwrap().avail;
+                let free = sys_info::mem_info().unwrap().free;
+                let swap_free = sys_info::mem_info().unwrap().swap_free;
+                if available <= needed {
+                    if executor.rank() == 0 {
+                        log::error!("Not enough available RAM + SWAP");
+                        let (mut amount, mut suf) = unbytify::bytify(available);
+                        log::error!("Available total: {}{}", amount, suf);
+                        (amount, suf) = unbytify::bytify(free);
+                        log::error!("Free: {}{}", amount, suf);
+                        (amount, suf) = unbytify::bytify(swap_free);
+                        log::error!("Swap: {}{}", amount, suf);
+                        (amount, suf) = unbytify::bytify(needed);
+                        log::error!("Needed {}{}", amount, suf);
+                    }
+                    return;
+                }
+                if executor.rank() == 0 {
+                    let (needed, suf) = unbytify::bytify(needed);
+                    log::warn!("Will be used amount {}{} of memory", needed, suf);
+                }
+            }
             let _: Vec<f32> = executor.sgemv(lab.random, lab.rows, lab.columns);
         }
     }

@@ -13,6 +13,8 @@ mpi = { version = "0.6.0", features = ["user-operations", "derive"] }
 num = "0.4.0"
 num-traits = "0.2.15"
 rand = "0.8.5"
+sys-info = "0.9.1"
+unbytify = "0.2.0"
 
 
 [package.metadata.cross.target.x86_64-unknown-linux-gnu]
