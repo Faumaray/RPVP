@@ -159,8 +159,8 @@ fn main() {
         Labs::Third(lab) => {
             let universer = mpi::initialize().unwrap();
             let executor = Executor::new(universer.world());
-            let result: Vec<f32> = vec![f32::default(); lab.columns];
-            executor.sgemv(lab.random, lab.rows, lab.columns, result);
+            let mut result: Vec<f32> = vec![f32::default(); lab.columns];
+            executor.sgemv(lab.random, lab.rows, lab.columns, &mut result);
         }
     }
 }

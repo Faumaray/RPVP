@@ -69,15 +69,18 @@ where
         }
     }
 
-    fn sgemv(&self, generate: bool, rows: usize, columns: usize, mut result: Vec<T>) {
+    fn sgemv(&self, generate: bool, rows: usize, columns: usize, result: &mut Vec<T>) {
+        trace!("[{}] Entered in SGEMV", self.rank);
         let (mut matrix, mut vector) =
             Executor::generate_test_data(rows, columns, generate, self.rank);
+        trace!("[{}] Generated Matrix and Vector", self.size);
         let mut t_start = 0.0;
         if self.rank == 0 {
             mpi::request::multiple_scope(self.size as usize, |scope, col| {
+                trace!("[{}] Entered first scope", self.rank);
                 let counts = self.get_distribution(rows, columns);
+                trace!("[{}] Calculated distribution", self.rank);
                 trace!("Vector: {}", vector[0]);
-                // TODO!: Find way to use ISEND
                 t_start = mpi::time();
                 for rank in 0..self.size {
                     col.add(
@@ -93,12 +96,14 @@ where
         mpi::request::multiple_scope(
             self.size as usize,
             |scope_two, coll: &mut mpi::request::RequestCollection<'_, _>| {
+                trace!("[{}] Entered second scope", self.rank);
                 coll.add(
                     self.communicator
                         .process_at_rank(0)
                         .immediate_receive_into(scope_two, &mut matrix),
                 );
                 coll.wait_all(&mut Vec::new());
+                trace!("[{}] Get local matrix slice", self.rank);
             },
         );
         trace!("[{}]Vector: {}", self.rank, vector[0]);
@@ -120,7 +125,7 @@ where
 
         self.communicator.all_reduce_into(
             &local_value,
-            &mut result,
+            result,
             mpi::collective::SystemOperation::sum(),
         );
         if self.rank == 0 {
