@@ -10,27 +10,36 @@ where
         + mpi::traits::AsDatatype
         + mpi::traits::BufferMut,
 {
-    fn generate_test_data(rows: usize, columns: usize, randomize: bool) -> (Vec<T>, Vec<T>) {
+    fn generate_test_data(
+        rows: usize,
+        columns: usize,
+        randomize: bool,
+        rank: i32,
+    ) -> (Vec<T>, Vec<T>) {
         use rand::prelude::*;
-
-        if randomize {
-            (
-                rand::thread_rng()
-                    .sample_iter(Standard)
-                    .take(rows * columns)
-                    .collect(),
-                rand::thread_rng()
-                    .sample_iter(Standard)
-                    .take(columns)
-                    .collect(),
-            )
+        if rank == 0 {
+            if randomize {
+                (
+                    rand::thread_rng()
+                        .sample_iter(Standard)
+                        .take(rows * columns)
+                        .collect(),
+                    rand::thread_rng()
+                        .sample_iter(Standard)
+                        .take(columns)
+                        .collect(),
+                )
+            } else {
+                (
+                    vec![T::default() + T::from_i32(1).unwrap(); columns * rows],
+                    vec![T::default() + T::from_i32(2).unwrap(); columns],
+                )
+            }
         } else {
-            (
-                vec![T::default() + T::from_i32(1).unwrap(); columns * rows],
-                vec![T::default() + T::from_i32(2).unwrap(); columns],
-            )
+            (Vec::new(), Vec::new())
         }
     }
     fn get_distribution(&self, rows: usize, columns: usize) -> Vec<i32>;
-    fn sgemv(&self, generate: bool, rows: usize, columns: usize) -> Vec<T>;
+    #[allow(patterns_in_fns_without_body)]
+    fn sgemv(&self, generate: bool, rows: usize, columns: usize, mut result: Vec<T>);
 }

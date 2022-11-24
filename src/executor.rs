@@ -32,6 +32,7 @@ impl Executor {
 impl<T> crate::lab_third::LabThree<T> for Executor
 where
     T: num_traits::Num
+        + std::fmt::Display
         + num::FromPrimitive
         + Default
         + Copy
@@ -68,47 +69,51 @@ where
         }
     }
 
-    fn sgemv(&self, generate: bool, rows: usize, columns: usize) -> Vec<T> {
-        let mut result: Vec<T> = vec![T::default(); columns];
+    fn sgemv(&self, generate: bool, rows: usize, columns: usize, mut result: Vec<T>) {
+        let (matrix, mut vector) = Executor::generate_test_data(rows, columns, generate, self.rank);
+        let mut t_start = 0.0;
+        mpi::request::multiple_scope(self.size as usize, |scope, col| {
+            if self.rank == 0 {
+                let counts = self.get_distribution(rows, columns);
 
-        let (local_matrix_flatten, mut local_vector) = if self.rank == 0 {
-            let (mut matrix, vector) = Executor::generate_test_data(rows, columns, generate);
-            let counts = self.get_distribution(rows, columns);
-            // TODO!: Find way to use ISEND
-            for rank in 1..self.size {
-                self.communicator
-                    .process_at_rank(rank)
-                    .send(matrix.drain(0..counts[rank as usize] as usize).as_slice());
-                info!("0 send to {}", rank);
+                // TODO!: Find way to use ISEND
+                t_start = mpi::time();
+                for rank in 0..self.size {
+                    col.add(
+                        self.communicator
+                            .process_at_rank(rank)
+                            .immediate_send(scope, &matrix[0..counts[rank as usize] as usize]),
+                    );
+                    info!("0 send to {}", rank);
+                }
+                col.wait_all(&mut Vec::new());
             }
-            (matrix, vector)
-        } else {
-            (
-                self.communicator.process_at_rank(0).receive_vec().0,
-                vec![T::default(); columns],
-            )
-        };
-        self.communicator
-            .process_at_rank(0)
-            .broadcast_into(&mut local_vector);
-        let mut column = 0;
+            let matrix = self.communicator.process_at_rank(0).receive_vec().0;
 
-        let mut local_value: Vec<T> = vec![T::default(); columns];
-        for value in local_matrix_flatten {
-            local_value[column] += local_vector[column] * value;
-            column += 1;
-            if column == columns {
-                column = 0;
+            self.communicator
+                .process_at_rank(0)
+                .broadcast_into(&mut vector);
+            let mut column = 0;
+
+            let mut local_value: Vec<T> = vec![T::default(); columns];
+            for value in matrix {
+                local_value[column] += vector[column] * value;
+                column += 1;
+                if column == columns {
+                    column = 0;
+                }
             }
-        }
 
-        self.communicator.all_reduce_into(
-            &local_value,
-            &mut result,
-            mpi::collective::SystemOperation::sum(),
-        );
-
-        result
+            self.communicator.all_reduce_into(
+                &local_value,
+                &mut result,
+                mpi::collective::SystemOperation::sum(),
+            );
+            if self.rank == 0 {
+                info!("Time: {}", mpi::time() - t_start);
+                info!("First value: {} ", result[0]);
+            }
+        });
     }
 }
 
