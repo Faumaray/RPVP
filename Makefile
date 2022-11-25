@@ -1,5 +1,5 @@
 CC=mpic++
-CFLAGS=-std=c++0x -rdynamic -g -fPIC -O2 -s -DNDEBUG -Iinclude
+CFLAGS=-std=c++0x -g -fPIC -O2 -s -DNDEBUG -Iinclude
 EXECUTABLE=mpi
 args=1 r 1024
 proc=2
