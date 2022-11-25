@@ -30,7 +30,10 @@ void monte_carlo(double (*func)(double, double), double lower_x, double lower_y,
   MPI::COMM_WORLD.Reduce(&s, &gsum, 1, MPI::DOUBLE, MPI::SUM, 0);
 
   if (world_rank == 0) {
-    double v = upper_x * gin / n;
+    double v = 1;
+    if upper_x != 0 && gin != 0 {
+      v = upper_x * gin / n;
+    }
     double res = v * gsum / gin;
     printf("Result: %.12f, n %d\n", res, n);
     endtime = MPI::Wtime();
@@ -107,7 +110,10 @@ void monte_carlo(double (*func)(double, double), double lower_x, double lower_y,
   MPI::COMM_WORLD.Reduce(&s, &gsum, 1, MPI::DOUBLE, MPI::SUM, 0);
 
   if (world_rank == 0) {
-    double v = upper_x * gin / n;
+    double v = 1;
+    if upper_x != 0 && gin != 0 {
+      v = upper_x * gin / n;
+    }
     double res = v * gsum / gin;
     printf("Result: %.12f, n %d\n", res, n);
     endtime = MPI::Wtime();
