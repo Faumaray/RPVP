@@ -18,7 +18,7 @@ help_en: ## Prints help for targets with comments
 	$(info Args=(number of lab) (for second lab: first name of the method [m\c]) (last number of the record book) (size of the buffer))
 
 cmake: prepare
-	cmake -B ./build -G ninja
+	cmake -B ./build -G Ninja
 	cmake --build build
 
 build: prepare liblab_one.so liblab_two.so liblab_three.so
