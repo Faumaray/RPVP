@@ -8,7 +8,7 @@
 int main(int argc, char **argv) {
 
   // // Initialize the MPI environment
-  MPI::Init();
+  MPI_Init(NULL, NULL);
   char **rng;
   void (*mode)(size_t);
   unsigned int lab;
@@ -95,6 +95,6 @@ int main(int argc, char **argv) {
     SGEMV(size, *matrix, multi, result);
     break;
   } //
-  MPI::Finalize();
+  MPI_Finalize();
   return 0;
 }

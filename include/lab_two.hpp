@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <math.h>
-#include <mpicxx.h>
+#include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
 
