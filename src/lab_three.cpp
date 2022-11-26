@@ -1,13 +1,12 @@
 #include <lab_three.hpp>
 
 void SGEMV(int dim, double *matrix_data, double *vector_data, double *result) {
-  int rank, size;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  int rank = MPI::COMM_WORLD.Get_rank();
+  int size = MPI::COMM_WORLD.Get_size();
   double *localresult = new double[dim / size]{};
   double matrix[dim][dim]; // local matrix
   double timer = MPI_Wtime();
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI::COMM_WORLD::Barrier();
   MPI_Scatter(matrix_data, (dim * dim) / size, MPI_DOUBLE, matrix,
               (dim * dim) / size, MPI_DOUBLE, 0,
               MPI_COMM_WORLD); // Scatter the Matrix
