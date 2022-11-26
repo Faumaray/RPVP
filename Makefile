@@ -18,8 +18,9 @@ help_en: ## Prints help for targets with comments
 	$(info Args=(number of lab) (for second lab: first name of the method [m\c]) (last number of the record book) (size of the buffer))
 
 cmake: prepare
-	cmake -B ./build -G Ninja
+	cmake -B ./build -G Ninja -Wno-dev
 	cmake --build build
+	cmake --install build
 
 build: prepare liblab_one.so liblab_two.so liblab_three.so
 	$(CC) -std=c++0x -O2 -s -DNDEBUG -lm -Iinclude -Wl,-rpath,$(PWD)/target -L./target -l:liblab_one.so -l:liblab_two.so -l:liblab_three.so -o target/$(EXECUTABLE) src/main.cpp

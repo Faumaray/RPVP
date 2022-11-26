@@ -19,8 +19,29 @@ add_library(lab_three SHARED src/lab_three.cpp)
 target_link_libraries(lab_three PUBLIC MPI::MPI_CXX)
 add_executable(mpi src/main.cpp)
 
+
+
 # MPI
 target_link_libraries(mpi PUBLIC lab_one)
 target_link_libraries(mpi PUBLIC lab_two)
 target_link_libraries(mpi PUBLIC lab_three)
 target_link_libraries(mpi PUBLIC MPI::MPI_CXX)
+install(CODE [[
+  file(GET_RUNTIME_DEPENDENCIES
+    EXECUTABLES "./target/bin/mpi"
+    RESOLVED_DEPENDENCIES_VAR _r_deps
+    UNRESOLVED_DEPENDENCIES_VAR _u_deps
+  )
+  foreach(_file ${_r_deps})
+    file(INSTALL
+      DESTINATION "./target/lib"
+      TYPE SHARED_LIBRARY
+      FOLLOW_SYMLINK_CHAIN
+      FILES "${_file}"
+    )
+  endforeach()
+  list(LENGTH _u_deps _u_length)
+  if("${_u_length}" GREATER 0)
+    message(WARNING "Unresolved dependencies detected!")
+  endif()
+]])
