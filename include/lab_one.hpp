@@ -1,5 +1,6 @@
 #include <mpi.h>
 #include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
 #include <vector>
 

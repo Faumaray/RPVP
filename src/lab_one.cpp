@@ -59,7 +59,7 @@ void gather(size_t size) {
         MPI::COMM_WORLD.Recv(rbuf + (size * i), size, MPI::CHAR, i, 0);
 
         printf(
-            "Process %d received in element %lu size of data %hhd from %d \n",
+            "Process %d received in element %lu size of data %ld from %d \n",
             world_rank, size * i, size, i);
 
         endtime = MPI::Wtime();
@@ -94,8 +94,7 @@ void broadcast(size_t size) {
     free(sbuf);
   } else {
     MPI::COMM_WORLD.Recv(rbuf, size, MPI::CHAR, 0, 0);
-    printf("Process %d received token size &lu from %d \n", world_rank, size,
-           0);
+    printf("Process %d received token size %lu from %d \n", world_rank, size, 0);
     free(rbuf);
     endtime = MPI::Wtime();
     std::cout << "Time " << endtime - starttime << " of process " << world_rank

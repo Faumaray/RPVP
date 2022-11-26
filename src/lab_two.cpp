@@ -31,7 +31,7 @@ void monte_carlo(double (*func)(double, double), double lower_x, double lower_y,
 
   if (world_rank == 0) {
     double v = 1;
-    if upper_x != 0 && gin != 0 {
+    if (upper_x != 0 && gin != 0) {
       v = upper_x * gin / n;
     }
     double res = v * gsum / gin;
@@ -111,7 +111,7 @@ void monte_carlo(double (*func)(double, double), double lower_x, double lower_y,
 
   if (world_rank == 0) {
     double v = 1;
-    if upper_x != 0 && gin != 0 {
+    if (upper_x != 0 && gin != 0) {
       v = upper_x * gin / n;
     }
     double res = v * gsum / gin;
