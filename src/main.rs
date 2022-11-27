@@ -36,7 +36,10 @@ enum Labs {
     /// Third Laboratory
     Third(Third),
     /// Fourth Laboratory
-    Four
+    Four{
+        #[arg(short, long, default_value_t = 1)]
+        dims: usize
+    }
 }
 #[derive(Args)]
 struct Third {
@@ -188,12 +191,12 @@ fn main() {
             }
             let _: Vec<f32> = executor.sgemv(lab.random, lab.rows, lab.columns);
         },
-        Labs::Four => {
+        Labs::Four{dims} => {
             
             setup_loger(None, cli.verbose);
             let universer = mpi::initialize().unwrap();
             let executor = Executor::new(universer.world());
-            executor.topological_ring();
+            executor.topological_ring(*dims);
         }
     }
 }
