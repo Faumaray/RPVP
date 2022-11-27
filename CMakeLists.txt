@@ -12,20 +12,20 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/target/bin)
 
 
 add_library(lab_one SHARED src/lab_one.cpp)
-target_link_libraries(lab_one PUBLIC MPI::MPI_CXX)
+target_link_libraries(lab_one PUBLIC MPI::MPI_CXX -static-libgcc -static-libstdc++)
 add_library(lab_two SHARED src/lab_two.cpp)
-target_link_libraries(lab_two PUBLIC MPI::MPI_CXX)
+target_link_libraries(lab_two PUBLIC MPI::MPI_CXX -static-libgcc -static-libstdc++)
 add_library(lab_three SHARED src/lab_three.cpp)
-target_link_libraries(lab_three PUBLIC MPI::MPI_CXX)
+target_link_libraries(lab_three PUBLIC MPI::MPI_CXX -static-libgcc -static-libstdc++ -static)
 add_executable(mpi src/main.cpp)
 
 
 
 # MPI
-target_link_libraries(mpi PUBLIC lab_one)
-target_link_libraries(mpi PUBLIC lab_two)
-target_link_libraries(mpi PUBLIC lab_three)
-target_link_libraries(mpi PUBLIC MPI::MPI_CXX)
+target_link_libraries(mpi PUBLIC lab_one -static-libgcc -static-libstdc++)
+target_link_libraries(mpi PUBLIC lab_two -static-libgcc -static-libstdc++)
+target_link_libraries(mpi PUBLIC lab_three -static-libgcc -static-libstdc++)
+target_link_libraries(mpi PUBLIC MPI::MPI_CXX -static-libgcc -static-libstdc++)
 install(CODE [[
   file(GET_RUNTIME_DEPENDENCIES
     EXECUTABLES ${CMAKE_CURRENT_SOURCE_DIR}/target/bin/mpi

@@ -20,6 +20,8 @@ help_en: ## Prints help for targets with comments
 cmake: prepare
 	cmake -B ./build -G Ninja -Wno-dev
 	cmake --build build
+
+cmakeinstall: cmake
 	cmake --install build
 
 build: prepare liblab_one.so liblab_two.so liblab_three.so
