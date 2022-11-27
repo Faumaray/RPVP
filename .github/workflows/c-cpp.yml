@@ -18,3 +18,9 @@ jobs:
         with:
           name: Output for windows
           path: target
+      - name: build with dlls
+        run: cmakeinstall
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Output for windows with dlls
+          path: target

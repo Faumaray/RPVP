@@ -18,14 +18,14 @@ help_en: ## Prints help for targets with comments
 	$(info Args=(number of lab) (for second lab: first name of the method [m\c]) (last number of the record book) (size of the buffer))
 
 cmake: prepare
-	cmake -B ./build -G Ninja -Wno-dev
+	cmake -B ./build -G Ninja -Wno-dev -DCMAKE_BUILD_TYPE=Release
 	cmake --build build
 
 cmakeinstall: cmake
 	cmake --install build
 
-build: prepare liblab_one.so liblab_two.so liblab_three.so
-	$(CC) -std=c++0x -O2 -s -DNDEBUG -lm -Iinclude -Wl,-rpath,$(PWD)/target -L./target -l:liblab_one.so -l:liblab_two.so -l:liblab_three.so -o target/$(EXECUTABLE) src/main.cpp
+build: prepare liblab_one.so liblab_two.so 
+	$(CC) -std=c++0x -O2 -s -DNDEBUG -lm -Iinclude -Wl,-rpath,$(PWD)/target -L./target -l:liblab_one.so -l:liblab_two.so  -o target/$(EXECUTABLE) src/main.cpp
 
 liblab_one.so: lab_one.o
 	$(CC) -shared -export-dynamic -o target/$@ build/$<
@@ -33,8 +33,6 @@ liblab_one.so: lab_one.o
 liblab_two.so: lab_two.o
 	$(CC) -shared -export-dynamic -o target/$@ build/$<
 
-liblab_three.so: lab_three.o
-	$(CC) -shared -export-dynamic -o target/$@ build/$<
 
 lab_one.o:
 	$(CC) $(CFLAGS) -c src/lab_one.cpp -o build/$@
@@ -42,8 +40,6 @@ lab_one.o:
 lab_two.o:
 	$(CC) $(CFLAGS) -c src/lab_two.cpp -o build/$@
 
-lab_three.o:
-	$(CC) $(CFLAGS) -c src/lab_three.cpp -o build/$@
 
 run:
 	mpirun -np $(proc) target/$(EXECUTABLE) $(args)
