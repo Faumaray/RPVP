@@ -64,9 +64,6 @@ struct Second {
     /// Name of the method
     #[arg(short, long, default_value_t = String::from("midpoint"), value_parser = clap::builder::PossibleValuesParser::new(["midpoint", "montecarlo"]))]
     name: String,
-    /// Variant from last number
-    #[arg(short, long, default_value_t = 6)]
-    variant: usize,
     /// Number of iterations for monte_carlo
     #[arg(short, long)]
     count: Option<usize>,
@@ -137,25 +134,30 @@ fn main() {
                 let _: f32 = Executor::midpoint_rule(
                     executor,
                     0.000001,
-                    |x| (1.0 - (0.7 / x).exp()) / (2.0 + x),
-                    (1.0, 2.0),
+                    |x| x/(((2.0*x).sin()).powi(3)),
+                    (0.1, 0.5),
                 );
             }
             "montecarlo" => {
                 setup_loger(None, cli.verbose);
+                let count = if lab.count.is_none() {
+                    10000000
+                } else {
+                    lab.count.unwrap().try_into().unwrap()
+                };
                 let universer = mpi::initialize().unwrap();
                 let executor = Executor::new(universer.world());
                 let _: f32 = Executor::monte_carlo(
                     executor,
                     |x, y| {
-                        if x < 0.0 || x > 1.0 || y < 2.0 || y > 5.0 {
+                        if x < 0.0 || x > 1.0 || y < 0.0 || y > 1.0 - x {
                             return None;
                         }
-                        Some(x / y.powi(2))
+                        Some((x+y).exp().powi(2))
                     },
                     0.0..1.0,
-                    2.0..5.0,
-                    lab.count.unwrap().try_into().unwrap(),
+                    0.0..1.0,
+                    count,
                 );
             }
             _ => {
