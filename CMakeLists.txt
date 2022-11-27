@@ -27,6 +27,29 @@ add_executable(mpi src/main.cpp)
 target_link_libraries(mpi PUBLIC lab_one -static-libgcc -static-libstdc++)
 target_link_libraries(mpi PUBLIC lab_two -static-libgcc -static-libstdc++)
 target_link_libraries(mpi PUBLIC MPI::MPI_CXX -static-libgcc -static-libstdc++)
+if(MINGW || WIN32)
+install(CODE [[
+  file(GET_RUNTIME_DEPENDENCIES
+    EXECUTABLES ${CMAKE_CURRENT_SOURCE_DIR}/target/bin/mpi.exe
+    RESOLVED_DEPENDENCIES_VAR _r_deps
+    UNRESOLVED_DEPENDENCIES_VAR _u_deps
+    PRE_INCLUDE_REGEXES "^[Mm][Yy][Ll][Ii][Bb][Rr][Aa][Rr][Yy]\\.[Dd][Ll][Ll]$"
+  )
+  foreach(_file ${_r_deps})
+    file(INSTALL
+      DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/target/lib
+      TYPE SHARED_LIBRARY
+      FOLLOW_SYMLINK_CHAIN
+      FILES "${_file}"
+    )
+  endforeach()
+  list(LENGTH _u_deps _u_length)
+  if("${_u_length}" GREATER 0)
+    message(WARNING "Unresolved dependencies detected!")
+  endif()
+]])
+endif()
+if(UNIX)
 install(CODE [[
   file(GET_RUNTIME_DEPENDENCIES
     EXECUTABLES ${CMAKE_CURRENT_SOURCE_DIR}/target/bin/mpi
@@ -47,3 +70,4 @@ install(CODE [[
     message(WARNING "Unresolved dependencies detected!")
   endif()
 ]])
+endif()
