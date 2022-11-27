@@ -16,7 +16,6 @@ use log4rs::{
 use systemstat::Platform;
 
 use self::executor::Executor;
-// use self::lab_third::Matrix;
 
 use crate::lab_third::LabThree;
 #[derive(Parser)]
@@ -36,6 +35,8 @@ enum Labs {
     Second(Second),
     /// Third Laboratory
     Third(Third),
+    /// Fourth Laboratory
+    Four
 }
 #[derive(Args)]
 struct Third {
@@ -186,6 +187,13 @@ fn main() {
                 }
             }
             let _: Vec<f32> = executor.sgemv(lab.random, lab.rows, lab.columns);
+        },
+        Labs::Four => {
+            
+            setup_loger(None, cli.verbose);
+            let universer = mpi::initialize().unwrap();
+            let executor = Executor::new(universer.world());
+            executor.topological_ring();
         }
     }
 }

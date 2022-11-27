@@ -18,6 +18,8 @@
             minimal.rustc
             minimal.cargo
             targets.x86_64-unknown-linux-gnu.latest.rust-std
+            targets.x86_64-unknown-linux-gnu.latest.clippy
+            targets.x86_64-unknown-linux-gnu.latest.rustfmt
             targets.x86_64-pc-windows-gnu.latest.rust-std
           ];
 
@@ -98,7 +100,7 @@
           singleStep = true;
         };
         devShell = pkgs.mkShell {
-          nativeBuildInputs = [ toolchain pkgs.llvmPackages.libclang pkgs.llvmPackages.libcxxClang pkgs.clang pkgs.mpich ];
+          nativeBuildInputs = [ toolchain pkgs.rust-analyzer pkgs.llvmPackages.libclang pkgs.llvmPackages.libcxxClang pkgs.clang pkgs.mpich ];
           depsBuildBuild = with pkgs; [
             pkgsCross.mingwW64.stdenv.cc
             pkgsCross.mingwW64.windows.pthreads

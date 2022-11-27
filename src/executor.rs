@@ -27,6 +27,24 @@ impl Executor {
     pub fn communicator(&self) -> SystemCommunicator {
         self.communicator
     }
+    pub fn topological_ring(&self)
+    {
+        let mut send = -1;
+        let cart = self.communicator().create_cartesian_communicator(&[0], &[true], true).unwrap();
+
+        let (source, dest) = cart.shift(0, 1);
+        if self.rank() == 0 {
+            cart.process_at_rank(dest.unwrap()).send(&self.rank());
+            send = cart.process_at_rank(source.unwrap()).receive().0
+        } else {
+            send = cart.process_at_rank(source.unwrap()).receive().0;
+            cart.process_at_rank(dest.unwrap()).send(&self.rank());
+        }
+        
+        info!("rank={} B={}", self.rank(), send);
+        
+        
+    }
 }
 
 impl<T> crate::lab_third::LabThree<T> for Executor
