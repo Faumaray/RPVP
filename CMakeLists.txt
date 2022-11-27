@@ -27,7 +27,7 @@ add_executable(mpi src/main.cpp)
 target_link_libraries(mpi PUBLIC lab_one -static-libgcc -static-libstdc++)
 target_link_libraries(mpi PUBLIC lab_two -static-libgcc -static-libstdc++)
 target_link_libraries(mpi PUBLIC MPI::MPI_CXX -static-libgcc -static-libstdc++)
-if(MINGW || WIN32)
+if(MINGW OR WIN32)
 install(CODE [[
   file(GET_RUNTIME_DEPENDENCIES
     EXECUTABLES ${CMAKE_CURRENT_SOURCE_DIR}/target/bin/mpi.exe
