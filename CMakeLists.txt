@@ -12,9 +12,9 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/target/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/target/bin)
 
 
-add_library(lab_one src/lab_one.cpp)
+add_library(lab_one SHARED src/lab_one.cpp)
 target_link_libraries(lab_one PUBLIC MPI::MPI_CXX -static-libgcc -static-libstdc++)
-add_library(lab_two src/lab_two.cpp)
+add_library(lab_two SHARED src/lab_two.cpp)
 target_link_libraries(lab_two PUBLIC MPI::MPI_CXX -static-libgcc -static-libstdc++)
 add_executable(mpi src/main.cpp)
 
