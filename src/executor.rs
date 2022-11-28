@@ -36,38 +36,78 @@ impl Executor {
             mpi::ffi::MPI_Dims_create(self.size(), dims as i32, distribution.as_mut_ptr());
         }
         let cart = self.communicator().create_cartesian_communicator(&distribution, &vec![true; distribution.len()], true).unwrap();
-        let (source, dest) = cart.shift(0, 1);
-        if cart.get_layout().coords[0] == 0 {    
+        let (mut source, mut dest) = cart.shift(0, 1);
+        if self.rank() == 0 {    
             cart.process_at_rank(dest.unwrap()).send(&send);
             info!("[{}] Sending {} to {}", self.rank(), send, dest.unwrap());
-            if self.rank() != 0 {
+           /* if self.rank() != 0 {
                 info!("[{}] Sending {} to {}", self.rank(), send, 0);
                 cart.process_at_rank(0).send(&send);
                 send = cart.process_at_rank(source.unwrap()).receive().0;
                 info!("[{}] Got {} from {}", self.rank(), send, source.unwrap());
-            }
+            }*/
         } else {
-            send = cart.process_at_rank(source.unwrap()).receive().0;
-            info!("[{}] Got {} from {}", self.rank(), send, source.unwrap());
-            let add: u32 = rand::thread_rng().gen_range(0..100);
-            info!("[{}] Adding own data {}+{}={}",self.rank(),send, add,send + add);
-            info!("[{}] Sending {} to {}", self.rank(), send + add, dest.unwrap());
-            cart.process_at_rank(dest.unwrap()).send(&(send+add));
+            let cords = cart.rank_to_coordinates(self.rank());
+            if cords[0] == dims as i32 - 1 && cords[1] == dims as i32 - 1 {//[last, last]
+                dest = Some(0);
+                send = cart.process_at_rank(source.unwrap()).receive().0;
+                info!("[{}] Got {} from {}", self.rank(), send, source.unwrap());
+                let add: u32 = rand::thread_rng().gen_range(0..100);
+                info!("[{}] Adding own data {}+{}={}",self.rank(),send, add,send + add);
+                info!("[{}] Sending {} to {}", self.rank(), send + add, dest.unwrap());
+                cart.process_at_rank(dest.unwrap()).send(&(send + add));
+            } else if cords[0] == dims as i32 - 1 && cords[1] != dims as i32 - 1{ //[last, any] WORK
+                dest = Some(cart.coordinates_to_rank(&[0,cords[1] + 1]));
+                send = cart.process_at_rank(source.unwrap()).receive().0;
+                info!("[{}] Got {} from {}", self.rank(), send, source.unwrap());
+                let add: u32 = rand::thread_rng().gen_range(0..100);
+                info!("[{}] Adding own data {}+{}={}",self.rank(),send, add,send + add);
+                info!("[{}] Sending {} to {}", self.rank(), send + add, dest.unwrap());
+                cart.process_at_rank(dest.unwrap()).send(&(send + add));
+                info!("[{}] Sending {} to {}", self.rank(), send + add, 0);
+                cart.process_at_rank(0).send(&(send + add));
+            }else if cords[0] == 0 { //[first,any]
+                source = Some(cart.coordinates_to_rank(&[dims as i32-1, cords[1]-1]));
+                send = cart.process_at_rank(source.unwrap()).receive().0;
+                info!("[{}] Got {} from {}", self.rank(), send, source.unwrap());
+                let add: u32 = rand::thread_rng().gen_range(0..100);
+                info!("[{}] Adding own data {}+{}={}",self.rank(),send, add,send + add);
+                info!("[{}] Sending {} to {}", self.rank(), send + add, dest.unwrap());
+                cart.process_at_rank(dest.unwrap()).send(&(send + add));
+                info!("[{}] Sending {} to {}", self.rank(), send + add, 0);
+                cart.process_at_rank(0).send(&(send + add));
+            }   else { //[any,any]
+                send = cart.process_at_rank(source.unwrap()).receive().0;
+                info!("[{}] Got {} from {}", self.rank(), send, source.unwrap());
+                let add: u32 = rand::thread_rng().gen_range(0..100);
+                info!("[{}] Adding own data {}+{}={}",self.rank(),send, add,send + add);
+                info!("[{}] Sending {} to {}", self.rank(), send + add, dest.unwrap());
+                cart.process_at_rank(dest.unwrap()).send(&(send + add));
+                info!("[{}] Sending {} to {}", self.rank(), send + add, 0);
+                cart.process_at_rank(0).send(&(send + add));
+            }
+
+            
+           
+           /*  cart.process_at_rank(dest.unwrap()).send(&(send+add));
             if dest.unwrap() != 0 {
                 info!("[{}] Sending {} to {}", self.rank(), send + add, 0);
                 cart.process_at_rank(0).send(&(send+add));
-            }
+            }*/
         }
 
         if self.rank() == 0 {
+            std::thread::sleep(std::time::Duration::from_secs(1));
             let mut result: Vec<u32> = vec![0; self.size() as usize - 1];   
             for rank in 1..self.size() {
                 result[rank as usize - 1] = cart.process_at_rank(rank).receive().0;
                 info!("[{}] Got {} from {}", self.rank(), result[rank as usize - 1], rank);
             }
             info!("[{}] All results = {:?}", self.rank(), result);
+            info!("Time estimated = {}", mpi::time()-t_start - 1.0);
+        } else {
+            info!("Time estimated = {}", mpi::time()-t_start);
         }
-        info!("Time estimated = {}", mpi::time()-t_start);
     }
 }
 
