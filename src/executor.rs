@@ -60,15 +60,14 @@ impl Executor {
         }
 
         if self.rank() == 0 {
-            std::thread::sleep(std::time::Duration::from_secs(1));
             let mut result: Vec<u32> = vec![0; self.size() as usize - 1];   
             for rank in 1..self.size() {
                 result[rank as usize - 1] = cart.process_at_rank(rank).receive().0;
                 info!("[{}] Got {} from {}", self.rank(), result[rank as usize - 1], rank);
             }
             info!("[{}] All results = {:?}", self.rank(), result);
-            info!("Time estimated = {}", mpi::time()-t_start - 1.0);
         }
+        info!("Time estimated = {}", mpi::time()-t_start);
     }
 }
 
