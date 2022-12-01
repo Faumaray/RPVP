@@ -92,7 +92,7 @@
             llvmPackages.libclang
             llvmPackages.libcxxClang
             clang
-            mpi
+            mpich
           ];
 
           doCheck = true;
