@@ -1,6 +1,7 @@
 #![feature(associated_type_defaults)]
 mod executor;
 mod lab_one;
+mod lab_six;
 mod lab_third;
 mod lab_two;
 
@@ -36,10 +37,15 @@ enum Labs {
     /// Third Laboratory
     Third(Third),
     /// Fourth Laboratory
-    Four{
+    Four {
         #[arg(short, long, default_value_t = 1)]
-        dims: usize
-    }
+        dims: usize,
+    },
+    /// Five Laboratory
+    Five {
+        #[arg(short, long, default_value_t = 1)]
+        dims: usize,
+    },
 }
 #[derive(Args)]
 struct Third {
@@ -134,7 +140,7 @@ fn main() {
                 let _: f32 = Executor::midpoint_rule(
                     executor,
                     0.000001,
-                    |x| x/(((2.0*x).sin()).powi(3)),
+                    |x| x / (((2.0 * x).sin()).powi(3)),
                     (0.1, 0.5),
                 );
             }
@@ -153,7 +159,7 @@ fn main() {
                         if x < 0.0 || x > 1.0 || y < 0.0 || y > 1.0 - x {
                             return None;
                         }
-                        Some((x+y).exp().powi(2))
+                        Some((x + y).exp().powi(2))
                     },
                     0.0..1.0,
                     0.0..1.0,
@@ -192,13 +198,18 @@ fn main() {
                 }
             }
             let _: Vec<f32> = executor.sgemv(lab.random, lab.rows, lab.columns);
-        },
-        Labs::Four{dims} => {
-            
+        }
+        Labs::Four { dims } => {
             setup_loger(None, cli.verbose);
             let universer = mpi::initialize().unwrap();
             let executor = Executor::new(universer.world());
             executor.topological_ring(*dims);
+        }
+        Labs::Five { dims } => {
+            setup_loger(None, cli.verbose);
+            let universer = mpi::initialize().unwrap();
+            let executor = Executor::new(universer.world());
+            executor.topological_line(*dims);
         }
     }
 }
