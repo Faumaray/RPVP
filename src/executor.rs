@@ -279,7 +279,7 @@ where
         }
     }
 
-    fn sgemm(&self, generate: bool, rows: usize, columns: usize) {
+    fn sgemm(&self, generate: bool, rows: usize, columns: usize, dims: usize) {
         trace!("[{}] Entered in SGEMV", self.rank);
         let mut result: Vec<T> = vec![T::default(); columns];
         let (mut matrix, mut sec_matrix) =
